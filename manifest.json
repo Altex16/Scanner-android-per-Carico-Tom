@@ -1,0 +1,25 @@
+{
+  "name": "Scanner Carico",
+  "short_name": "Scanner",
+  "description": "App per spunta colli durante il carico",
+"start_url": "/Scanner-android-per-Carico-Tom/",
+"scope": "/Scanner-android-per-Carico-Tom/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f1117",
+  "theme_color": "#f0a500",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

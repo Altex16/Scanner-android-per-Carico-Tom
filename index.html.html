@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Scanner Carico</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#f0a500">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-title" content="Scanner Carico">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;600;700&display=swap');
+
+:root {
+  --bg:#0f1117; --surf:#181c27; --surf2:#1f2438; --border:#2a3050;
+  --acc:#f0a500; --ok:#00c896; --err:#ff4a4a; --warn:#ff8c00;
+  --pause:#a78bfa; --cam:#38bdf8; --text:#e8ecf5; --muted:#7a84a0;
+  --safe: env(safe-area-inset-bottom, 0px);
+  --hdr: 56px;
+  --nav: 64px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;}
+
+/* ══ TOP BAR ══ */
+.topbar{
+  position:fixed;top:0;left:0;right:0;height:var(--hdr);
+  background:var(--surf);border-bottom:2px solid var(--acc);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;z-index:300;
+}
+.topbar-left{display:flex;flex-direction:column;gap:1px;}
+.topbar h1{font-family:'IBM Plex Mono',monospace;font-size:.9rem;font-weight:700;color:var(--acc);letter-spacing:.06em;}
+.topbar h1 span{color:var(--text);}
+.topbar-sub{font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--muted);letter-spacing:.08em;}
+.topbar-right{display:flex;gap:8px;align-items:center;}
+.hbadge{font-family:'IBM Plex Mono',monospace;font-size:.62rem;background:var(--surf2);border:1px solid var(--border);border-radius:5px;padding:3px 7px;color:var(--muted);}
+.hbadge b{color:var(--text);}
+.hbadge.hp b{color:var(--pause);}
+
+/* ══ BOTTOM NAV ══ */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  height:calc(var(--nav) + var(--safe));
+  padding-bottom:var(--safe);
+  background:var(--surf);border-top:1px solid var(--border);
+  display:flex;z-index:300;
+}
+.nav-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;border:none;background:none;color:var(--muted);
+  font-family:'IBM Plex Mono',monospace;font-size:.58rem;letter-spacing:.04em;
+  cursor:pointer;transition:all .2s;padding:8px 4px;
+}
+.nav-btn .nav-icon{font-size:1.3rem;line-height:1;}
+.nav-btn.active{color:var(--acc);}
+.nav-btn.active .nav-icon{filter:drop-shadow(0 0 6px var(--acc));}
+
+/* ══ PAGES ══ */
+.page{
+  position:fixed;top:var(--hdr);left:0;right:0;
+  bottom:calc(var(--nav) + var(--safe));
+  overflow-y:auto;overflow-x:hidden;
+  display:none;
+  -webkit-overflow-scrolling:touch;
+}
+.page.active{display:block;}
+.page::-webkit-scrollbar{display:none;}
+
+/* ══ PAGE: SCAN ══ */
+#page-scan{background:var(--bg);}
+.scan-page-inner{padding:12px 14px;display:flex;flex-direction:column;gap:10px;}
+
+/* Session bar */
+.session-bar{
+  background:var(--surf);border:1px solid var(--border);
+  border-radius:10px;padding:12px 14px;
+}
+.session-bar.active{border-color:var(--ok);background:rgba(0,200,150,.05);}
+.session-bar.inactive{border-color:var(--warn);}
+.sb-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.sb-label{font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+.sb-end{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--err);background:none;border:1px solid var(--err);border-radius:4px;padding:3px 8px;cursor:pointer;}
+.sb-selects{display:flex;flex-direction:column;gap:6px;}
+.sb-select{
+  width:100%;background:var(--surf2);border:1px solid var(--border);
+  border-radius:8px;padding:10px 12px;color:var(--text);
+  font-family:'IBM Plex Sans',sans-serif;font-size:.85rem;outline:none;
+}
+.sb-select:focus{border-color:var(--acc);}
+.sb-select:disabled{opacity:.4;}
+.btn-start-sess{
+  width:100%;margin-top:8px;padding:13px;
+  background:var(--ok);color:#000;border:none;border-radius:10px;
+  font-family:'IBM Plex Mono',monospace;font-size:.82rem;font-weight:700;
+  cursor:pointer;letter-spacing:.05em;
+}
+.sb-active-info{display:flex;flex-direction:column;gap:4px;}
+.sb-client{font-weight:700;font-size:1rem;color:var(--ok);}
+.sb-order{font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--acc);}
+.sb-prog{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted);}
+.sb-progbar{height:5px;background:var(--surf2);border-radius:3px;margin-top:6px;overflow:hidden;}
+.sb-progfill{height:100%;background:linear-gradient(90deg,var(--acc),var(--ok));border-radius:3px;transition:width .4s;}
+
+/* Input tabs */
+.input-card{background:var(--surf);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.input-tabs{display:flex;border-bottom:1px solid var(--border);}
+.itab{
+  flex:1;padding:11px 6px;text-align:center;
+  font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.04em;
+  border:none;background:var(--surf2);color:var(--muted);cursor:pointer;
+  transition:all .2s;line-height:1.3;
+}
+.itab.active{background:var(--acc);color:#000;font-weight:700;}
+.itab.cam-itab.active{background:var(--cam);color:#000;}
+.imode{display:none;padding:14px;}
+.imode.active{display:block;}
+
+/* Scanner input */
+.scan-input-wrap{position:relative;}
+.scan-input-wrap input{
+  width:100%;background:var(--surf2);border:2px solid var(--border);
+  border-radius:10px;padding:14px 14px 14px 44px;
+  color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:1rem;
+  outline:none;transition:all .2s;
+}
+.scan-input-wrap input:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(240,165,0,.15);}
+.scan-input-wrap input.fok{border-color:var(--ok)!important;background:rgba(0,200,150,.08)!important;}
+.scan-input-wrap input.ferr{border-color:var(--err)!important;background:rgba(255,74,74,.08)!important;}
+.scan-ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:1rem;opacity:.4;}
+.scan-hint{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--muted);margin-top:6px;text-align:center;}
+
+/* Manual input */
+.man-row{display:grid;grid-template-columns:1fr 72px 72px;gap:6px;margin-bottom:8px;}
+.man-row input{
+  background:var(--surf2);border:1px solid var(--border);border-radius:8px;
+  padding:12px 10px;color:var(--text);font-family:'IBM Plex Mono',monospace;
+  font-size:.88rem;outline:none;width:100%;
+}
+.man-row input:focus{border-color:var(--acc);}
+.man-row input::placeholder{color:var(--muted);font-size:.65rem;}
+.btn-man{
+  width:100%;padding:13px;background:var(--acc);color:#000;
+  border:none;border-radius:10px;font-family:'IBM Plex Mono',monospace;
+  font-size:.82rem;font-weight:700;cursor:pointer;
+}
+
+/* Camera */
+.cam-wrap{position:relative;border-radius:10px;overflow:hidden;background:#000;aspect-ratio:4/3;}
+#camVideo{width:100%;height:100%;object-fit:cover;display:block;}
+.cam-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+.cam-frame{width:60%;aspect-ratio:1;border:2px solid var(--cam);border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.5);position:relative;}
+.cam-frame::before,.cam-frame::after{content:'';position:absolute;width:20px;height:20px;border-color:var(--cam);border-style:solid;border-width:0;}
+.cam-frame::before{top:-2px;left:-2px;border-top-width:3px;border-left-width:3px;border-radius:3px 0 0 0;}
+.cam-frame::after{bottom:-2px;right:-2px;border-bottom-width:3px;border-right-width:3px;border-radius:0 0 3px 0;}
+.cam-line{position:absolute;left:4%;right:4%;height:2px;background:linear-gradient(90deg,transparent,var(--cam),transparent);animation:scanLine 2s ease-in-out infinite;}
+@keyframes scanLine{0%,100%{top:10%}50%{top:90%}}
+.cam-sbar{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.75);padding:8px 10px;font-family:'IBM Plex Mono',monospace;font-size:.7rem;text-align:center;}
+.cam-sbar.s{color:var(--muted);}.cam-sbar.f{color:var(--ok);}.cam-sbar.e{color:var(--err);}
+.cam-flash{position:absolute;inset:0;opacity:0;pointer-events:none;border-radius:10px;transition:opacity .12s;}
+.cam-flash.ok{background:rgba(0,200,150,.3);opacity:1;}
+.cam-flash.err{background:rgba(255,74,74,.3);opacity:1;}
+.cam-cd{position:absolute;top:0;left:0;height:3px;background:var(--ok);}
+.cam-btns{display:flex;gap:8px;margin-top:8px;}
+.btn-cam-start{flex:1;padding:13px;background:var(--cam);color:#000;border:none;border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:700;cursor:pointer;}
+.btn-cam-stop{padding:13px 16px;background:var(--surf2);color:var(--muted);border:1px solid var(--border);border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;cursor:pointer;}
+.btn-cam-flip{padding:13px 14px;background:var(--surf2);color:var(--muted);border:1px solid var(--border);border-radius:10px;font-size:1rem;cursor:pointer;}
+
+/* Status */
+.scan-status{
+  background:var(--surf);border:1px solid var(--border);border-radius:10px;
+  padding:12px 14px;font-family:'IBM Plex Mono',monospace;font-size:.76rem;
+  min-height:48px;line-height:1.5;color:var(--muted);transition:all .3s;
+}
+.scan-status.ok{border-color:var(--ok);color:var(--ok);background:rgba(0,200,150,.05);}
+.scan-status.err{border-color:var(--err);color:var(--err);background:rgba(255,74,74,.05);}
+.scan-status.warn{border-color:var(--warn);color:var(--warn);background:rgba(255,140,0,.05);}
+
+/* Audio btn */
+.audio-row{display:flex;align-items:center;justify-content:space-between;}
+.audio-btn{
+  display:flex;align-items:center;gap:6px;
+  font-family:'IBM Plex Mono',monospace;font-size:.68rem;
+  padding:8px 12px;border-radius:8px;border:1px solid var(--border);
+  background:var(--surf2);color:var(--muted);cursor:pointer;transition:all .2s;
+}
+.audio-btn.on{border-color:var(--ok);color:var(--ok);}
+.adot{width:7px;height:7px;border-radius:50%;background:var(--muted);}
+.audio-btn.on .adot{background:var(--ok);}
+
+/* ══ PAGE: ORDINI ══ */
+#page-ordini{background:var(--bg);}
+.ordini-inner{padding:12px 14px;}
+
+.filter-row{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;}
+.filter-row::-webkit-scrollbar{display:none;}
+.fbtn{flex-shrink:0;padding:7px 13px;border-radius:20px;border:1px solid var(--border);background:var(--surf);color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:.65rem;cursor:pointer;white-space:nowrap;}
+.fbtn.active{border-color:var(--acc);background:rgba(240,165,0,.1);color:var(--acc);}
+.fbtn.pf.active{border-color:var(--pause);background:rgba(167,139,250,.1);color:var(--pause);}
+
+.client-card{background:var(--surf);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;}
+.client-card.done{border-color:var(--ok);}
+.client-card.part{border-color:var(--warn);}
+.client-card.hasp{border-color:var(--pause);}
+
+.cc-header{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
+.cc-header:active{background:var(--surf2);}
+.cc-name{font-weight:700;font-size:.92rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.cc-badge{font-family:'IBM Plex Mono',monospace;font-size:.58rem;padding:2px 7px;border-radius:10px;}
+.bd{background:rgba(0,200,150,.15);color:var(--ok);}
+.bp{background:rgba(255,140,0,.15);color:var(--warn);}
+.bn{background:rgba(122,132,160,.15);color:var(--muted);}
+.cc-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
+.cc-counts{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--muted);}
+.cc-arrow{font-size:.75rem;color:var(--muted);}
+
+.order-list{border-top:1px solid var(--border);}
+.order-item{padding:12px 14px;border-bottom:1px solid var(--border);}
+.order-item:last-child{border-bottom:none;}
+.order-item.paused{background:rgba(167,139,250,.04);}
+.oi-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.oi-num{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:.88rem;color:var(--acc);display:flex;align-items:center;gap:6px;}
+.oi-pbadge{font-family:'IBM Plex Mono',monospace;font-size:.55rem;color:var(--pause);background:rgba(167,139,250,.15);border-radius:3px;padding:1px 5px;}
+.oi-actions{display:flex;gap:6px;align-items:center;}
+.oi-count{font-family:'IBM Plex Mono',monospace;font-size:.78rem;}
+.oi-count .sc{color:var(--ok);font-weight:700;}
+.oi-count .tc{color:var(--muted);}
+.btn-pause{padding:6px 10px;background:none;border:1px solid rgba(167,139,250,.3);color:var(--pause);border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:.62rem;cursor:pointer;}
+.btn-unpause{padding:6px 10px;background:var(--pause);color:#1a1030;border:none;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:.62rem;font-weight:700;cursor:pointer;}
+.oi-desc{font-size:.72rem;color:var(--muted);margin-bottom:8px;line-height:1.4;}
+.colli-grid{display:flex;flex-wrap:wrap;gap:3px;}
+.collo{
+  width:26px;height:26px;border-radius:4px;display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:.55rem;font-weight:700;
+  border:1px solid var(--border);background:var(--surf2);color:var(--muted);
+  transition:all .3s;
+}
+.collo.done{background:rgba(0,200,150,.2);border-color:var(--ok);color:var(--ok);}
+.collo.miss{background:rgba(255,140,0,.15);border-color:var(--warn);color:var(--warn);}
+.collo.hi{animation:boop .6s ease;}
+@keyframes boop{0%{transform:scale(1)}40%{transform:scale(1.7);box-shadow:0 0 12px var(--ok)}100%{transform:scale(1.05)}}
+
+.complete-banner{background:linear-gradient(135deg,rgba(0,200,150,.12),rgba(240,165,0,.08));border:1px solid var(--ok);border-radius:10px;padding:12px 16px;margin-bottom:12px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--ok);text-align:center;}
+
+/* ══ PAGE: PAUSA ══ */
+#page-pausa{background:var(--bg);}
+.pausa-inner{padding:12px 14px;}
+.pausa-empty{text-align:center;padding:50px 20px;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:.8rem;}
+.pausa-card{background:var(--surf);border:1px solid rgba(167,139,250,.3);border-radius:12px;padding:14px;margin-bottom:10px;}
+.pc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.pc-ord{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:.9rem;color:var(--pause);}
+.pc-cl{font-size:.78rem;color:var(--muted);margin-bottom:6px;}
+.pc-miss{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--warn);margin-bottom:10px;}
+.btn-riprendi{width:100%;padding:11px;background:var(--pause);color:#1a1030;border:none;border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:700;cursor:pointer;}
+
+/* ══ PAGE: LOG ══ */
+#page-log{background:var(--bg);}
+.log-inner{padding:12px 14px;}
+.log-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.log-title{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+.btn-clrlog{font-family:'IBM Plex Mono',monospace;font-size:.65rem;padding:6px 10px;border:1px solid var(--border);background:none;color:var(--muted);border-radius:6px;cursor:pointer;}
+.log-item{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;margin-bottom:4px;font-family:'IBM Plex Mono',monospace;font-size:.72rem;animation:slideIn .2s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
+.log-item.ok   {background:rgba(0,200,150,.07);color:var(--ok);}
+.log-item.err  {background:rgba(255,74,74,.07);color:var(--err);}
+.log-item.dup  {background:rgba(255,140,0,.07);color:var(--warn);}
+.log-item.psd  {background:rgba(167,139,250,.07);color:var(--pause);}
+.ldot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.log-item.ok  .ldot{background:var(--ok);}
+.log-item.err .ldot{background:var(--err);}
+.log-item.dup .ldot{background:var(--warn);}
+.log-item.psd .ldot{background:var(--pause);}
+.ltime{color:var(--muted);font-size:.6rem;margin-left:auto;white-space:nowrap;}
+.log-empty{text-align:center;padding:40px 20px;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:.78rem;}
+
+/* ══ OVERLAYS ══ */
+/* Session confirm modal */
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;display:none;align-items:flex-end;justify-content:center;padding:0 0 calc(var(--nav) + var(--safe)) 0;}
+#modal.show{display:flex;}
+.modal-sheet{background:var(--surf);border-radius:18px 18px 0 0;width:100%;max-width:480px;padding:20px 20px 24px;animation:sheetUp .25s ease;}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-drag{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px;}
+.modal-icon{font-size:2.4rem;text-align:center;margin-bottom:8px;}
+.modal-title{font-family:'IBM Plex Mono',monospace;font-size:.95rem;font-weight:700;color:var(--err);text-align:center;margin-bottom:10px;}
+.modal-body{font-size:.82rem;color:var(--text);line-height:1.6;text-align:center;margin-bottom:18px;}
+.modal-body .mb{color:var(--warn);font-weight:700;}
+.modal-body .ms{color:var(--acc);font-family:'IBM Plex Mono',monospace;font-size:.8rem;display:block;margin:4px 0;}
+.modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-mno{padding:14px;background:var(--ok);color:#000;border:none;border-radius:12px;font-family:'IBM Plex Mono',monospace;font-size:.82rem;font-weight:700;cursor:pointer;}
+.btn-myes{padding:14px;background:var(--surf2);color:var(--muted);border:1px solid var(--border);border-radius:12px;font-family:'IBM Plex Mono',monospace;font-size:.82rem;cursor:pointer;}
+
+/* Toast */
+#toast{position:fixed;top:calc(var(--hdr) + 10px);left:50%;transform:translateX(-50%) translateY(-20px);background:var(--surf2);border:1px solid var(--border);border-radius:10px;padding:10px 18px;font-family:'IBM Plex Mono',monospace;font-size:.76rem;opacity:0;transition:all .3s;pointer-events:none;z-index:400;white-space:nowrap;max-width:90vw;text-align:center;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#toast.ok     {border-color:var(--ok);color:var(--ok);}
+#toast.err    {border-color:var(--err);color:var(--err);}
+#toast.complete{border-color:var(--acc);color:var(--acc);background:rgba(240,165,0,.1);}
+#toast.paused {border-color:var(--pause);color:var(--pause);}
+
+/* Error flash full screen */
+#errFlash{position:fixed;inset:0;pointer-events:none;opacity:0;z-index:450;transition:opacity .12s;}
+#errFlash.show{opacity:1;}
+
+/* PC layout override */
+@media(min-width:700px){
+  html,body{overflow:auto;}
+  .page{position:static;display:none;height:auto;overflow:visible;}
+  .page.active{display:block;}
+  body{display:grid;grid-template-rows:var(--hdr) 1fr var(--nav);height:100vh;}
+  .topbar{position:static;}
+  .bottom-nav{position:static;}
+  .page{overflow-y:auto;}
+  #page-scan .scan-page-inner{max-width:520px;margin:0 auto;}
+  #page-ordini .ordini-inner{max-width:700px;margin:0 auto;}
+  #page-pausa .pausa-inner{max-width:520px;margin:0 auto;}
+  #page-log .log-inner{max-width:520px;margin:0 auto;}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-left">
+    <h1>📦 SCANNER <span>CARICO</span></h1>
+    <div class="topbar-sub" id="topSub">Nessuna lista caricata</div>
+  </div>
+  <div class="topbar-right">
+    <div class="hbadge">COLLI <b id="hColli">0/0</b></div>
+    <div class="hbadge hp">PAUSA <b id="hPausa">0</b></div>
+  </div>
+</header>
+
+<!-- PAGES -->
+
+<!-- ── SCAN PAGE ── -->
+<div class="page active" id="page-scan">
+  <div class="scan-page-inner">
+
+    <!-- Session bar -->
+    <div class="session-bar inactive" id="sessBar">
+      <div class="sb-top">
+        <div class="sb-label">🎯 Sessione attiva</div>
+        <button class="sb-end" id="sbEndBtn" onclick="endSession()" style="display:none">✕ Fine</button>
+      </div>
+      <div id="sessSetup">
+        <div class="sb-selects">
+          <select class="sb-select" id="selClient" onchange="onClientChange()">
+            <option value="">— Seleziona cliente —</option>
+          </select>
+          <select class="sb-select" id="selOrder" disabled>
+            <option value="">— Seleziona ordine —</option>
+          </select>
+        </div>
+        <button class="btn-start-sess" onclick="startSession()">▶ INIZIA SESSIONE</button>
+      </div>
+      <div id="sessInfo" style="display:none">
+        <div class="sb-active-info">
+          <div class="sb-client" id="sbClient">—</div>
+          <div class="sb-order" id="sbOrder">—</div>
+          <div class="sb-prog" id="sbProg">—</div>
+        </div>
+        <div class="sb-progbar"><div class="sb-progfill" id="sbProgFill" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <!-- Input card -->
+    <div class="input-card">
+      <div class="input-tabs">
+        <button class="itab active" id="itab-scanner" onclick="switchTab('scanner')">▮▮▯<br>SCANNER</button>
+        <button class="itab" id="itab-manual" onclick="switchTab('manual')">⌨<br>MANUALE</button>
+        <button class="itab cam-itab" id="itab-cam" onclick="switchTab('cam')">📷<br>FOTOCAM.</button>
+      </div>
+
+      <!-- Scanner -->
+      <div class="imode active" id="imode-scanner">
+        <div class="scan-input-wrap">
+          <span class="scan-ico">▮▮▯▮▯</span>
+          <input type="text" id="scanInput" placeholder="Scanner pronto — punta e scansiona" autocomplete="off" inputmode="none">
+        </div>
+        <div class="scan-hint">Il lettore barcode scrive qui automaticamente</div>
+      </div>
+
+      <!-- Manual -->
+      <div class="imode" id="imode-manual">
+        <div class="man-row">
+          <input type="text" id="manOrder" placeholder="N° Ordine (es. 718306)" inputmode="numeric">
+          <input type="number" id="manIdx" placeholder="Collo" min="1" inputmode="numeric">
+          <input type="number" id="manTot" placeholder="Tot." min="1" inputmode="numeric">
+        </div>
+        <button class="btn-man" onclick="submitManual()">▶ REGISTRA COLLO</button>
+      </div>
+
+      <!-- Camera -->
+      <div class="imode" id="imode-cam">
+        <div class="cam-wrap" id="camWrap">
+          <video id="camVideo" playsinline muted></video>
+          <div class="cam-overlay"><div class="cam-frame"><div class="cam-line" id="camLine"></div></div></div>
+          <div class="cam-flash" id="camFlash"></div>
+          <div class="cam-cd" id="camCd" style="width:0%"></div>
+          <div class="cam-sbar s" id="camSbar">Premi AVVIA per aprire la fotocamera</div>
+        </div>
+        <div class="cam-btns">
+          <button class="btn-cam-start" id="btnCamStart" onclick="startCamera()">📷 AVVIA</button>
+          <button class="btn-cam-flip" id="btnCamFlip" onclick="flipCamera()" style="display:none">🔄</button>
+          <button class="btn-cam-stop" id="btnCamStop" onclick="stopCamera()" style="display:none">■ STOP</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div class="scan-status" id="scanStatus">In attesa di scansione...</div>
+
+    <!-- Audio toggle -->
+    <div class="audio-row">
+      <button class="audio-btn" id="audioBtn" onclick="toggleAudio()">
+        <div class="adot" id="adot"></div>
+        <span id="atxt">AUDIO OFF — tocca per attivare</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── ORDINI PAGE ── -->
+<div class="page" id="page-ordini">
+  <div class="ordini-inner" id="ordiniInner">
+    <div style="text-align:center;padding:50px 20px;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:.8rem;">
+      📦 Carica prima la lista Excel
+    </div>
+  </div>
+</div>
+
+<!-- ── PAUSA PAGE ── -->
+<div class="page" id="page-pausa">
+  <div class="pausa-inner" id="pausaInner">
+    <div class="pausa-empty">⏸ Nessun ordine in pausa</div>
+  </div>
+</div>
+
+<!-- ── LOG PAGE ── -->
+<div class="page" id="page-log">
+  <div class="log-inner">
+    <div class="log-hdr">
+      <div class="log-title">📋 Log Scansioni</div>
+      <button class="btn-clrlog" onclick="clearLog()">Cancella tutto</button>
+    </div>
+    <div id="logList"><div class="log-empty">Nessuna scansione registrata</div></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" id="nav-scan"   onclick="goPage('scan')">
+    <div class="nav-icon">📷</div>SCANSIONA
+  </button>
+  <button class="nav-btn" id="nav-ordini" onclick="goPage('ordini')">
+    <div class="nav-icon">📦</div>ORDINI
+  </button>
+  <button class="nav-btn" id="nav-pausa"  onclick="goPage('pausa')">
+    <div class="nav-icon">⏸</div>PAUSA<span id="pauseBadge" style="display:none;font-size:.55rem;color:var(--pause);"> (0)</span>
+  </button>
+  <button class="nav-btn" id="nav-log"    onclick="goPage('log')">
+    <div class="nav-icon">📋</div>LOG
+  </button>
+  <button class="nav-btn" id="nav-carica" onclick="document.getElementById('fileInput').click()">
+    <div class="nav-icon">⬆️</div>CARICA
+  </button>
+</nav>
+
+<!-- Modal -->
+<div id="modal">
+  <div class="modal-sheet">
+    <div class="modal-drag"></div>
+    <div class="modal-icon">⚠️</div>
+    <div class="modal-title">COLLO FUORI SESSIONE</div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-btns">
+      <button class="btn-mno"  onclick="modalAnswer(false)">✕ ANNULLA</button>
+      <button class="btn-myes" onclick="modalAnswer(true)">✓ Registra comunque</button>
+    </div>
+  </div>
+</div>
+
+<div id="errFlash"></div>
+<div id="toast"></div>
+<input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://unpkg.com/@zxing/library@0.19.1/umd/index.min.js"></script>
+<script>
+// ── AUDIO ─────────────────────────────────────────────
+let audioCtx=null, audioOn=false;
+function getCtx(){
+  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==='suspended') audioCtx.resume();
+  return audioCtx;
+}
+function playBeep(type){
+  if(!audioOn&&type!=='alarm') return;
+  try{
+    const ctx=getCtx();
+    const comp=ctx.createDynamicsCompressor();
+    comp.threshold.value=-3;comp.ratio.value=6;comp.attack.value=0;comp.release.value=.1;
+    comp.connect(ctx.destination);
+    const c={
+      ok:      [{f:880,d:.12,v:1},{f:1200,d:.18,v:1}],
+      error:   [{f:220,d:.25,v:1},{f:160,d:.3,v:1},{f:120,d:.2,v:1}],
+      dup:     [{f:440,d:.18,v:1},{f:330,d:.22,v:1}],
+      complete:[{f:660,d:.12,v:1},{f:880,d:.12,v:1},{f:1100,d:.12,v:1},{f:1320,d:.2,v:1}],
+      pause:   [{f:600,d:.18,v:1},{f:400,d:.25,v:1}],
+      alarm:   [{f:1200,d:.18,v:1},{f:300,d:.18,v:1},{f:1200,d:.18,v:1},{f:300,d:.18,v:1},{f:1200,d:.25,v:1}]
+    };
+    let t=ctx.currentTime;
+    (c[type]||c.ok).forEach(n=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g);g.connect(comp);
+      o.frequency.value=n.f;
+      o.type=(type==='error'||type==='dup'||type==='alarm')?'sawtooth':'square';
+      g.gain.setValueAtTime(n.v,t);g.gain.exponentialRampToValueAtTime(.001,t+n.d);
+      o.start(t);o.stop(t+n.d);t+=n.d*.8;
+    });
+  }catch(e){}
+}
+function toggleAudio(){
+  audioOn=!audioOn;
+  const btn=document.getElementById('audioBtn');
+  const dot=document.getElementById('adot');
+  const txt=document.getElementById('atxt');
+  btn.classList.toggle('on',audioOn);
+  dot.style.background=audioOn?'var(--ok)':'var(--muted)';
+  txt.textContent=audioOn?'AUDIO ON':'AUDIO OFF — tocca per attivare';
+  if(audioOn){try{getCtx();}catch(e){}playBeep('ok');}
+}
+
+// ── STATE ─────────────────────────────────────────────
+const S={clients:{},paused:{},filter:'all'};
+const SESS={active:false,client:null,order:null};
+let pendingScan=null;
+
+// ── NAVIGATION ────────────────────────────────────────
+function goPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+  if(name!=='scan') stopCamera();
+  if(name==='scan'&&document.getElementById('imode-scanner').classList.contains('active'))
+    setTimeout(()=>document.getElementById('scanInput').focus(),100);
+}
+
+// ── FILE LOAD ─────────────────────────────────────────
+document.getElementById('fileInput').addEventListener('change',e=>{if(e.target.files[0])loadFile(e.target.files[0]);});
+function loadFile(file){
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
+      const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1});
+      S.clients={};S.paused={};
+      SESS.active=false;SESS.client=null;SESS.order=null;
+      for(let i=1;i<rows.length;i++){
+        const row=rows[i];
+        const cl=(row[0]||'').toString().trim(),or=(row[1]||'').toString().trim();
+        const co=parseInt(row[2])||0,de=(row[4]||'').toString().trim();
+        if(!cl||!or||!co||cl.toUpperCase().includes('TOTALI')) continue;
+        if(!S.clients[cl]) S.clients[cl]={orders:{}};
+        if(!S.clients[cl].orders[or]) S.clients[cl].orders[or]={total:co,scanned:new Set(),desc:de};
+        else S.clients[cl].orders[or].total+=co;
+      }
+      const nc=Object.keys(S.clients).length;
+      document.getElementById('topSub').textContent=`${nc} clienti · ${totOrders()} ordini · ${totColli()} colli`;
+      document.getElementById('logList').innerHTML='';
+      renderAll();
+      populateSelects();
+      updateSessionUI();
+      showToast(`✅ Lista caricata: ${nc} clienti`,'ok');
+      playBeep('ok');
+    }catch(err){showToast('❌ Errore: '+err.message,'err');}
+  };
+  r.readAsArrayBuffer(file);
+}
+
+// ── SESSION ───────────────────────────────────────────
+function populateSelects(){
+  const sc=document.getElementById('selClient');
+  const so=document.getElementById('selOrder');
+  const prev=sc.value;
+  sc.innerHTML='<option value="">— Seleziona cliente —</option>';
+  Object.keys(S.clients).sort().forEach(cn=>{
+    const o=document.createElement('option');
+    o.value=cn;o.textContent=cn;
+    if(cn===prev)o.selected=true;
+    sc.appendChild(o);
+  });
+  so.innerHTML='<option value="">— Seleziona ordine —</option>';
+  so.disabled=true;
+  if(prev&&S.clients[prev]) fillOrderSelect(prev);
+}
+function onClientChange(){
+  fillOrderSelect(document.getElementById('selClient').value);
+}
+function fillOrderSelect(cn){
+  const so=document.getElementById('selOrder');
+  so.innerHTML='<option value="">— Seleziona ordine —</option>';
+  so.disabled=!cn;
+  if(!cn||!S.clients[cn]) return;
+  Object.entries(S.clients[cn].orders).forEach(([on,od])=>{
+    const sc=od.scanned.size,tot=od.total,done=sc===tot;
+    const o=document.createElement('option');
+    o.value=on;
+    o.textContent=`${on}  (${sc}/${tot}${done?' ✓':''})`;
+    so.appendChild(o);
+  });
+  so.disabled=false;
+}
+function startSession(){
+  const cn=document.getElementById('selClient').value;
+  const on=document.getElementById('selOrder').value;
+  if(!cn){showToast('Seleziona un cliente','err');return;}
+  if(!on){showToast('Seleziona un ordine','err');return;}
+  SESS.active=true;SESS.client=cn;SESS.order=on;
+  updateSessionUI();
+  showToast('✅ Sessione avviata: '+on,'ok');
+  playBeep('ok');
+}
+function endSession(){
+  SESS.active=false;SESS.client=null;SESS.order=null;
+  updateSessionUI();
+  showToast('Sessione terminata','paused');
+}
+function updateSessionUI(){
+  const bar=document.getElementById('sessBar');
+  const setup=document.getElementById('sessSetup');
+  const info=document.getElementById('sessInfo');
+  const endBtn=document.getElementById('sbEndBtn');
+  if(SESS.active){
+    bar.className='session-bar active';
+    setup.style.display='none';info.style.display='block';endBtn.style.display='block';
+    document.getElementById('sbClient').textContent=SESS.client;
+    document.getElementById('sbOrder').textContent='Ordine: '+SESS.order;
+    refreshSessProg();
+  } else {
+    bar.className='session-bar inactive';
+    setup.style.display='block';info.style.display='none';endBtn.style.display='none';
+    populateSelects();
+  }
+}
+function refreshSessProg(){
+  if(!SESS.active) return;
+  const ord=S.clients[SESS.client]?.orders[SESS.order];
+  if(!ord) return;
+  const sc=ord.scanned.size,tot=ord.total,rem=tot-sc;
+  const pct=tot>0?Math.round(sc/tot*100):0;
+  document.getElementById('sbProg').textContent=
+    sc===tot?`✅ COMPLETATO — tutti i ${tot} colli`:`${sc}/${tot} colli — mancano ${rem}`;
+  document.getElementById('sbProgFill').style.width=pct+'%';
+}
+function checkSession(orderNum,clientName){
+  if(!SESS.active) return 'ok';
+  if(clientName!==SESS.client) return 'wrong-client';
+  if(orderNum!==SESS.order) return 'wrong-order';
+  return 'ok';
+}
+
+// ── TABS ──────────────────────────────────────────────
+function switchTab(t){
+  ['scanner','manual','cam'].forEach(x=>{
+    document.getElementById('itab-'+x).classList.toggle('active',x===t);
+    document.getElementById('imode-'+x).classList.toggle('active',x===t);
+  });
+  if(t!=='cam') stopCamera();
+  if(t==='scanner') setTimeout(()=>document.getElementById('scanInput').focus(),50);
+  else if(t==='manual') setTimeout(()=>document.getElementById('manOrder').focus(),50);
+}
+
+// ── SCANNER INPUT ─────────────────────────────────────
+document.getElementById('scanInput').addEventListener('keydown',function(e){
+  if(e.key==='Enter'){const v=this.value.trim();if(v)processScan(v,'scanner');this.value='';}
+});
+
+// ── MANUAL INPUT ──────────────────────────────────────
+function submitManual(){
+  const o=document.getElementById('manOrder').value.trim();
+  const i=document.getElementById('manIdx').value.trim();
+  const t=document.getElementById('manTot').value.trim();
+  if(!o){setStatus('❌ Inserisci il numero ordine','err');return;}
+  processScan(i?(t?`${o}_${i}/${t}`:`${o}_${i}`):o,'manual');
+  document.getElementById('manIdx').value='';
+  document.getElementById('manTot').value='';
+  document.getElementById('manOrder').focus();
+}
+document.getElementById('manTot').addEventListener('keydown',e=>{if(e.key==='Enter')submitManual();});
+document.getElementById('manIdx').addEventListener('keydown',e=>{if(e.key==='Enter')submitManual();});
+document.getElementById('manOrder').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('manIdx').focus();});
+
+// ── CAMERA ────────────────────────────────────────────
+let codeReader=null,camStream=null,facingMode='environment',camCooldown=false;
+let allDevices=[],deviceIndex=0,cooldownTimer=null,cooldownInterval=null;
+const COOLDOWN_MS=2000;
+
+async function startCamera(){
+  const sbar=document.getElementById('camSbar');
+  const btnStart=document.getElementById('btnCamStart');
+  const btnStop=document.getElementById('btnCamStop');
+  const btnFlip=document.getElementById('btnCamFlip');
+  const video=document.getElementById('camVideo');
+  sbar.textContent='Avvio fotocamera...';sbar.className='cam-sbar s';
+  btnStart.style.display='none';
+  try{
+    if(typeof ZXing==='undefined'){sbar.textContent='Libreria non caricata.';sbar.className='cam-sbar e';btnStart.style.display='block';return;}
+    stopCamera(true);
+    const hints=new Map();
+    const fmts=[ZXing.BarcodeFormat.QR_CODE,ZXing.BarcodeFormat.CODE_128,ZXing.BarcodeFormat.CODE_39,ZXing.BarcodeFormat.EAN_13,ZXing.BarcodeFormat.EAN_8,ZXing.BarcodeFormat.DATA_MATRIX,ZXing.BarcodeFormat.PDF_417,ZXing.BarcodeFormat.ITF,ZXing.BarcodeFormat.AZTEC];
+    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,fmts);
+    hints.set(ZXing.DecodeHintType.TRY_HARDER,true);
+    codeReader=new ZXing.BrowserMultiFormatReader(hints,200);
+
+    let permStream=null;
+    try{permStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:facingMode}}});permStream.getTracks().forEach(t=>t.stop());}
+    catch(pe){if(pe.name==='NotAllowedError'||pe.name==='PermissionDeniedError'){sbar.textContent='⛔ Permesso negato. Vai in Impostazioni → Browser → Fotocamera → Consenti.';sbar.className='cam-sbar e';btnStart.style.display='block';return;}}
+
+    let devices=[];
+    try{devices=await ZXing.BrowserMultiFormatReader.listVideoInputDevices();}catch(e){}
+    allDevices=devices;
+    let deviceId=undefined;
+    if(devices.length>0){
+      if(facingMode==='environment'){
+        const back=devices.find(d=>{const l=d.label.toLowerCase();return(l.includes('back')||l.includes('rear'))&&!l.includes('wide')&&!l.includes('ultra')&&!l.includes('tele')&&!l.includes('macro');})||devices.find(d=>{const l=d.label.toLowerCase();return l.includes('back')||l.includes('rear')||l.includes('environment');});
+        if(back)deviceId=back.deviceId;
+        if(!deviceId)deviceId=devices[0].deviceId;
+      } else {
+        const front=devices.find(d=>{const l=d.label.toLowerCase();return l.includes('front')||l.includes('user')||l.includes('selfie');});
+        if(front)deviceId=front.deviceId;
+        if(!deviceId&&devices.length>1)deviceId=devices[devices.length-1].deviceId;
+      }
+      if(devices.length>1){btnFlip.style.display='block';deviceIndex=devices.findIndex(d=>d.deviceId===deviceId);if(deviceIndex<0)deviceIndex=0;}
+    }
+    btnStop.style.display='block';
+    document.getElementById('camLine').style.animationPlayState='running';
+    sbar.textContent='🔍 Inquadra il codice sull\'etichetta...';sbar.className='cam-sbar s';
+    if(deviceId){
+      await codeReader.decodeFromVideoDevice(deviceId,video,(res,err)=>{if(res&&!camCooldown){handleCamScan(res.getText());startCooldown();}});
+    } else {
+      await codeReader.decodeFromConstraints({video:{facingMode:{ideal:facingMode},width:{ideal:1920},height:{ideal:1080}}},video,(res,err)=>{if(res&&!camCooldown){handleCamScan(res.getText());startCooldown();}});
+    }
+    camStream=video.srcObject;
+  }catch(err){
+    let msg='📷 Errore fotocamera';
+    if(err.name==='NotAllowedError')msg='⛔ Permesso negato.';
+    else if(err.name==='NotFoundError')msg='📷 Nessuna fotocamera trovata.';
+    else if(err.name==='NotReadableError')msg='📷 Fotocamera occupata da altra app.';
+    else msg=`📷 ${err.name}`;
+    sbar.textContent=msg;sbar.className='cam-sbar e';
+    btnStart.style.display='block';btnStop.style.display='none';btnFlip.style.display='none';
+  }
+}
+function stopCamera(silent=false){
+  if(codeReader){try{codeReader.reset();}catch(e){}codeReader=null;}
+  if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
+  const video=document.getElementById('camVideo');
+  if(video.srcObject){try{video.srcObject.getTracks().forEach(t=>t.stop());}catch(e){}video.srcObject=null;}
+  if(!silent){
+    document.getElementById('btnCamStart').style.display='block';
+    document.getElementById('btnCamStop').style.display='none';
+    document.getElementById('btnCamFlip').style.display='none';
+    document.getElementById('camSbar').textContent='Fotocamera spenta.';
+    document.getElementById('camSbar').className='cam-sbar s';
+    document.getElementById('camLine').style.animationPlayState='paused';
+  }
+  camCooldown=false;clearTimeout(cooldownTimer);clearInterval(cooldownInterval);
+}
+async function flipCamera(){
+  if(allDevices.length>1){
+    deviceIndex=(deviceIndex+1)%allDevices.length;
+    const nd=allDevices[deviceIndex];
+    document.getElementById('camSbar').textContent='Cambio fotocamera...';
+    stopCamera(true);await new Promise(r=>setTimeout(r,300));
+    const hints=new Map();
+    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,[ZXing.BarcodeFormat.QR_CODE,ZXing.BarcodeFormat.CODE_128,ZXing.BarcodeFormat.CODE_39,ZXing.BarcodeFormat.EAN_13,ZXing.BarcodeFormat.EAN_8,ZXing.BarcodeFormat.DATA_MATRIX,ZXing.BarcodeFormat.PDF_417,ZXing.BarcodeFormat.ITF]);
+    hints.set(ZXing.DecodeHintType.TRY_HARDER,true);
+    codeReader=new ZXing.BrowserMultiFormatReader(hints,200);
+    const video=document.getElementById('camVideo');
+    document.getElementById('btnCamStop').style.display='block';
+    document.getElementById('btnCamFlip').style.display='block';
+    document.getElementById('camLine').style.animationPlayState='running';
+    try{
+      await codeReader.decodeFromVideoDevice(nd.deviceId,video,(res,err)=>{if(res&&!camCooldown){handleCamScan(res.getText());startCooldown();}});
+      camStream=video.srcObject;
+      document.getElementById('camSbar').textContent='🔍 Inquadra il codice...';
+      document.getElementById('camSbar').className='cam-sbar s';
+    }catch(e){document.getElementById('camSbar').textContent='Errore: '+e.message;document.getElementById('camSbar').className='cam-sbar e';}
+  } else {facingMode=(facingMode==='environment')?'user':'environment';stopCamera(true);await startCamera();}
+}
+function handleCamScan(raw){
+  const sbar=document.getElementById('camSbar');
+  const flash=document.getElementById('camFlash');
+  sbar.textContent='📦 Letto: '+raw;
+  flash.className='cam-flash';void flash.offsetWidth;
+  const ok=processScan(raw,'cam');
+  flash.classList.add(ok!==false?'ok':'err');
+  sbar.className=ok!==false?'cam-sbar f':'cam-sbar e';
+  setTimeout(()=>{flash.className='cam-flash';},500);
+}
+function startCooldown(){
+  camCooldown=true;
+  const bar=document.getElementById('camCd');
+  let pct=100;bar.style.width='100%';
+  clearInterval(cooldownInterval);
+  cooldownInterval=setInterval(()=>{pct-=(100/(COOLDOWN_MS/50));bar.style.width=Math.max(0,pct)+'%';if(pct<=0){clearInterval(cooldownInterval);bar.style.width='0%';camCooldown=false;}},50);
+  clearTimeout(cooldownTimer);cooldownTimer=setTimeout(()=>{camCooldown=false;},COOLDOWN_MS);
+}
+
+// ── BARCODE PARSER ────────────────────────────────────
+function parseBarcode(raw){
+  raw=raw.trim();
+  let orderNum=null,cIdx=null,cTot=null;
+  const m1=raw.match(/^(\d+)[_\-\s|,;](\d+)\/(\d+)$/);
+  const m2=raw.match(/^(\d+)[_\-\s|,;](\d+)$/);
+  const m3=raw.match(/^(\d+)$/);
+  const m4=raw.match(/^(\d{4,}?)(\d{1,3})-(\d{1,3})$/);
+  if(m1){orderNum=m1[1];cIdx=+m1[2];cTot=+m1[3];}
+  else if(m2){orderNum=m2[1];cIdx=+m2[2];}
+  else if(m3){orderNum=m3[1];}
+  else if(m4){
+    const ad=+m4[3],sf=+m4[2];
+    if(sf===ad||String(sf).replace(/^0+/,'')===String(ad)){orderNum=m4[1];cIdx=ad;}
+    else{orderNum=m4[1]+m4[2];cIdx=ad;}
+  } else {
+    const p=raw.split(/[\s_\-|,;]+/);
+    if(p.length>=2){orderNum=p[0].replace(/\D/g,'');const q=p[1].split('/');cIdx=+q[0];if(q[1])cTot=+q[1];}
+  }
+  return{orderNum,cIdx,cTot};
+}
+function resolveOrder(raw){
+  for(const[cn,cd] of Object.entries(S.clients))
+    if(cd.orders[raw]) return{client:cn,order:cd.orders[raw],orderNum:raw};
+  for(let trim=1;trim<=2;trim++){
+    const s=raw.slice(0,-trim);if(s.length<4) break;
+    for(const[cn,cd] of Object.entries(S.clients))
+      if(cd.orders[s]) return{client:cn,order:cd.orders[s],orderNum:s};
+  }
+  return null;
+}
+
+// ── MODAL ─────────────────────────────────────────────
+function showModal(raw,source,orderNum,clientName,check){
+  pendingScan={raw,source};
+  let reason='';
+  if(check==='wrong-client') reason=`Il collo appartiene a <span class="mb">${clientName}</span><br>ma la sessione è per <span class="mb">${SESS.client}</span>.`;
+  else reason=`Il collo è dell'ordine <span class="mb">${orderNum}</span><br>ma la sessione è per l'ordine <span class="mb">${SESS.order}</span>.`;
+  document.getElementById('modalBody').innerHTML=reason+'<br><br>Vuoi registrarlo comunque?';
+  document.getElementById('modal').classList.add('show');
+  playBeep('alarm');
+  flashScreen('rgba(255,74,74,.2)');
+}
+function modalAnswer(proceed){
+  document.getElementById('modal').classList.remove('show');
+  if(proceed&&pendingScan) processScan(pendingScan.raw,pendingScan.source,true);
+  pendingScan=null;
+}
+
+// ── CORE SCAN ─────────────────────────────────────────
+function processScan(raw,source='scanner',bypass=false){
+  const{orderNum:rawOrd,cIdx:rawIdx,cTot}=parseBarcode(raw);
+  let orderNum=rawOrd,cIdx=rawIdx;
+  if(!orderNum){
+    flashErr();playBeep('error');flashScreen('rgba(255,74,74,.15)');
+    setStatus(`❌ Formato non riconosciuto: "${raw.substring(0,25)}"`, 'err');
+    addLog(`Non riconosciuto: ${raw.substring(0,20)}`,'err');
+    return false;
+  }
+  const resolved=resolveOrder(orderNum);
+  let fClient=resolved?.client||null,fOrder=resolved?.order||null;
+  if(resolved) orderNum=resolved.orderNum;
+  if(!fOrder){
+    const sim=findSim(orderNum);
+    flashErr();playBeep('error');flashScreen('rgba(255,74,74,.15)');
+    if(sim) showToast(`⚠️ Simile: ${sim.ord} (${sim.cl})`,'err');
+    setStatus(`❌ Ordine ${orderNum} non trovato${sim?' — Simile: '+sim.ord:''}`, 'err');
+    addLog(`Ordine ${orderNum} sconosciuto`,'err');
+    return false;
+  }
+  if(!bypass){
+    const sc=checkSession(orderNum,fClient);
+    if(sc!=='ok'){showModal(raw,source,orderNum,fClient,sc);return false;}
+  }
+  const isPaused=!!S.paused[orderNum];
+  if(cIdx===null){
+    for(let i=1;i<=fOrder.total;i++){if(!fOrder.scanned.has(i)){cIdx=i;break;}}
+    if(cIdx===null){flashErr();playBeep('dup');setStatus(`⚠️ Ordine ${orderNum}: tutti i colli già scansionati!`,'warn');addLog(`Ordine ${orderNum}: già completo`,'dup');return false;}
+  }
+  if(cIdx<1||cIdx>fOrder.total){
+    flashErr();playBeep('error');
+    setStatus(`❌ Collo ${cIdx} fuori range (1–${fOrder.total})`,'err');
+    addLog(`Ordine ${orderNum}: collo ${cIdx} fuori range`,'err');
+    return false;
+  }
+  if(fOrder.scanned.has(cIdx)){
+    flashErr();playBeep('dup');flashScreen('rgba(255,140,0,.1)');
+    setStatus(`⚠️ Collo ${cIdx}/${fOrder.total} già scansionato! (${orderNum})`,'warn');
+    addLog(`Ordine ${orderNum}: collo ${cIdx} duplicato`,'dup');
+    return false;
+  }
+  // ✅ SUCCESS
+  fOrder.scanned.add(cIdx);
+  flashOk();
+  if(isPaused){
+    S.paused[orderNum].missing=S.paused[orderNum].missing.filter(x=>x!==cIdx);
+    if(!S.paused[orderNum].missing.length){delete S.paused[orderNum];showToast(`✅ Ordine pausa ${orderNum} completato!`,'complete');playBeep('complete');}
+    else playBeep('ok');
+  } else playBeep('ok');
+  const rem=fOrder.total-fOrder.scanned.size;
+  if(rem===0){
+    setStatus(`✅ Ordine ${orderNum} COMPLETATO! Tutti i ${fOrder.total} colli.`,'ok');
+    if(!isPaused){showToast(`🎉 Ordine ${orderNum} completato!`,'complete');playBeep('complete');}
+    addLog(`Ordine ${orderNum}: COMPLETATO ✓`,'ok');
+  } else {
+    setStatus(`✅ Collo ${cIdx}/${fOrder.total} — ${fClient} — mancano ${rem}`,'ok');
+    addLog(`${orderNum}: collo ${cIdx}/${fOrder.total} ✓`,'ok');
+  }
+  if(clientDone(fClient)) showToast(`🏆 Cliente "${fClient}" completato!`,'complete');
+  renderAll();
+  highlightCollo(orderNum,cIdx);
+  if(source==='scanner') setTimeout(()=>document.getElementById('scanInput').focus(),50);
+  return true;
+}
+
+// ── PAUSE / RESUME ────────────────────────────────────
+function pauseOrder(ord,cl){
+  const o=S.clients[cl]?.orders[ord];if(!o)return;
+  const miss=[];for(let i=1;i<=o.total;i++)if(!o.scanned.has(i))miss.push(i);
+  if(!miss.length){showToast('Ordine già completo','err');return;}
+  S.paused[ord]={clientName:cl,missing:[...miss]};
+  playBeep('pause');
+  addLog(`Ordine ${ord} in PAUSA — ${miss.length} colli mancanti`,'psd');
+  showToast(`⏸ Ordine ${ord} in pausa`,'paused');
+  renderAll();
+}
+function resumeOrder(ord){
+  delete S.paused[ord];
+  addLog(`Ordine ${ord}: pausa rimossa`,'ok');
+  showToast(`▶ Ordine ${ord} ripreso`,'ok');
+  renderAll();
+}
+
+// ── SIMILARITY ───────────────────────────────────────
+function findSim(q){
+  let best=null,bs=0;
+  for(const[cn,cd] of Object.entries(S.clients))
+    for(const on of Object.keys(cd.orders)){const s=simScore(q,on);if(s>0.6&&s>bs){bs=s;best={ord:on,cl:cn};}}
+  return best;
+}
+function simScore(a,b){
+  if(a===b)return 1;const lo=a.length>b.length?a:b,sh=a.length>b.length?b:a;
+  if(!lo.length)return 1;let m=0;for(let i=0;i<sh.length;i++)if(sh[i]===lo[i])m++;return m/lo.length;
+}
+
+// ── RENDER ────────────────────────────────────────────
+function renderAll(){
+  updateTopBar();renderOrdini();renderPausa();
+  if(SESS.active)refreshSessProg();
+}
+function updateTopBar(){
+  const tc=totColli(),sc=scanColli();
+  document.getElementById('hColli').textContent=`${sc}/${tc}`;
+  const np=Object.keys(S.paused).length;
+  document.getElementById('hPausa').textContent=np;
+  const pb=document.getElementById('pauseBadge');
+  pb.textContent=` (${np})`;pb.style.display=np>0?'inline':'none';
+}
+function renderOrdini(){
+  const inner=document.getElementById('ordiniInner');
+  if(!Object.keys(S.clients).length){
+    inner.innerHTML='<div style="text-align:center;padding:50px 20px;color:var(--muted);font-family:\'IBM Plex Mono\',monospace;font-size:.8rem;">📦 Carica prima la lista Excel</div>';
+    return;
+  }
+  const td=doneOrders(),to=totOrders();
+  let html='';
+  if(td===to&&to>0) html+=`<div class="complete-banner">🏆 CARICO COMPLETATO — tutti i ${to} ordini!</div>`;
+  html+=`<div class="filter-row">
+    <button class="fbtn ${S.filter==='all'?'active':''}" onclick="setFilter('all')">Tutti</button>
+    <button class="fbtn ${S.filter==='pending'?'active':''}" onclick="setFilter('pending')">Da completare</button>
+    <button class="fbtn ${S.filter==='complete'?'active':''}" onclick="setFilter('complete')">Completati</button>
+    <button class="fbtn pf ${S.filter==='paused'?'active':''}" onclick="setFilter('paused')">⏸ In pausa</button>
+  </div>`;
+  for(const[cn,cd] of Object.entries(S.clients)){
+    const ords=cd.orders,oc=Object.keys(ords).length;
+    const dc=Object.values(ords).filter(o=>o.scanned.size===o.total).length;
+    const cs=Object.values(ords).reduce((a,o)=>a+o.scanned.size,0);
+    const ct=Object.values(ords).reduce((a,o)=>a+o.total,0);
+    const done=dc===oc,part=cs>0&&!done,hasp=Object.keys(ords).some(o=>S.paused[o]);
+    if(S.filter==='complete'&&!done)continue;
+    if(S.filter==='pending'&&done)continue;
+    if(S.filter==='paused'&&!hasp)continue;
+    const bc=done?'bd':part?'bp':'bn';
+    const bt=done?'✓ COMPLETO':part?`${dc}/${oc} ordini`:'DA INIZIARE';
+    const cc=hasp?'hasp':done?'done':part?'part':'';
+    html+=`<div class="client-card ${cc}">
+      <div class="cc-header" onclick="toggleCC('${escH(cn)}')">
+        <div class="cc-name">${escH(cn)}<span class="cc-badge ${bc}">${bt}</span>${hasp?'<span style="color:var(--pause)">⏸</span>':''}</div>
+        <div class="cc-right"><div class="cc-counts">${cs}/${ct} colli</div><div class="cc-arrow" id="cca-${escId(cn)}">▾</div></div>
+      </div>
+      <div class="order-list" id="ccl-${escId(cn)}">`;
+    for(const[on,od] of Object.entries(ords)){
+      const sc=od.scanned.size,tot=od.total,odone=sc===tot,ip=!!S.paused[on];
+      const miss=ip?S.paused[on].missing:[];
+      html+=`<div class="order-item ${ip?'paused':''}">
+        <div class="oi-top">
+          <div class="oi-num">${on}${ip?'<span class="oi-pbadge">⏸ PAUSA</span>':''}</div>
+          <div class="oi-actions">
+            <div class="oi-count"><span class="sc">${sc}</span><span class="tc">/${tot}</span>${odone?' ✓':''}</div>
+            ${!odone?(ip?`<button class="btn-unpause" onclick="resumeOrder('${on}')">▶</button>`:`<button class="btn-pause" onclick="pauseOrder('${on}','${escH(cn)}')">⏸</button>`):''}
+          </div>
+        </div>
+        <div class="oi-desc">${escH(od.desc)}</div>
+        <div class="colli-grid">`;
+      for(let i=1;i<=tot;i++){
+        const cls=od.scanned.has(i)?'done':(ip&&miss.includes(i))?'miss':'';
+        html+=`<div class="collo ${cls}" id="collo-${on}-${i}">${i}</div>`;
+      }
+      html+=`</div></div>`;
+    }
+    html+=`</div></div>`;
+  }
+  inner.innerHTML=html;
+}
+function renderPausa(){
+  const inner=document.getElementById('pausaInner');
+  const entries=Object.entries(S.paused);
+  if(!entries.length){inner.innerHTML='<div class="pausa-empty">⏸ Nessun ordine in pausa</div>';return;}
+  inner.innerHTML=entries.map(([on,d])=>`
+    <div class="pausa-card">
+      <div class="pc-top"><div class="pc-ord">Ordine ${on}</div></div>
+      <div class="pc-cl">${escH(d.clientName)}</div>
+      <div class="pc-miss">Colli mancanti: ${d.missing.join(', ')}</div>
+      <button class="btn-riprendi" onclick="resumeOrder('${on}')">▶ RIPRENDI</button>
+    </div>`).join('');
+}
+function toggleCC(name){
+  const el=document.getElementById('ccl-'+escId(name));
+  const ar=document.getElementById('cca-'+escId(name));
+  if(!el)return;
+  const h=el.style.display==='none';
+  el.style.display=h?'block':'none';ar.textContent=h?'▾':'▸';
+}
+function setFilter(f){S.filter=f;renderOrdini();}
+function highlightCollo(ord,idx){
+  const el=document.getElementById(`collo-${ord}-${idx}`);
+  if(el){el.classList.add('hi');setTimeout(()=>el.classList.remove('hi'),700);el.scrollIntoView({behavior:'smooth',block:'nearest'});}
+}
+
+// ── LOG ───────────────────────────────────────────────
+function addLog(msg,type){
+  const now=new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const empty=document.querySelector('#logList .log-empty');
+  if(empty)empty.remove();
+  const d=document.createElement('div');d.className=`log-item ${type}`;
+  d.innerHTML=`<div class="ldot"></div><span>${msg}</span><span class="ltime">${now}</span>`;
+  const l=document.getElementById('logList');l.insertBefore(d,l.firstChild);
+}
+function clearLog(){document.getElementById('logList').innerHTML='<div class="log-empty">Nessuna scansione registrata</div>';}
+
+// ── UI HELPERS ────────────────────────────────────────
+function setStatus(m,t){const e=document.getElementById('scanStatus');e.textContent=m;e.className='scan-status '+t;}
+function flashOk(){const i=document.getElementById('scanInput');i.classList.remove('fok','ferr');void i.offsetWidth;i.classList.add('fok');setTimeout(()=>i.classList.remove('fok'),500);}
+function flashErr(){const i=document.getElementById('scanInput');i.classList.remove('fok','ferr');void i.offsetWidth;i.classList.add('ferr');setTimeout(()=>i.classList.remove('ferr'),500);}
+let flashT;
+function flashScreen(color){
+  const el=document.getElementById('errFlash');
+  el.style.background=color;el.classList.add('show');
+  clearTimeout(flashT);flashT=setTimeout(()=>el.classList.remove('show'),350);
+}
+let ttimer;
+function showToast(msg,type){
+  const t=document.getElementById('toast');t.textContent=msg;t.className='show '+(type||'');
+  clearTimeout(ttimer);ttimer=setTimeout(()=>t.className='',3200);
+}
+
+// ── MATH HELPERS ─────────────────────────────────────
+function totOrders(){return Object.values(S.clients).reduce((a,c)=>a+Object.keys(c.orders).length,0);}
+function totColli() {return Object.values(S.clients).reduce((a,c)=>a+Object.values(c.orders).reduce((b,o)=>b+o.total,0),0);}
+function scanColli(){return Object.values(S.clients).reduce((a,c)=>a+Object.values(c.orders).reduce((b,o)=>b+o.scanned.size,0),0);}
+function doneOrders(){return Object.values(S.clients).reduce((a,c)=>a+Object.values(c.orders).filter(o=>o.scanned.size===o.total).length,0);}
+function clientDone(n){const c=S.clients[n];return c?Object.values(c.orders).every(o=>o.scanned.size===o.total):false;}
+function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function escId(s){return String(s).replace(/[^a-zA-Z0-9]/g,'_');}
+
+// Keep scanner focused when on scan page in scanner mode
+setInterval(()=>{
+  const si=document.getElementById('scanInput');
+  const onScan=document.getElementById('page-scan').classList.contains('active');
+  const scanMode=document.getElementById('imode-scanner').classList.contains('active');
+  if(onScan&&scanMode&&si&&document.activeElement!==si&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='BUTTON'&&document.activeElement.tagName!=='SELECT')
+    si.focus();
+},1500);
+
+window.addEventListener('beforeunload',()=>stopCamera());
+</script>
+
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(() => console.log('SW registrato'))
+      .catch(e => console.log('SW errore:', e));
+  });
+}
+</script>
+</body>
+</html>
