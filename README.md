@@ -1,0 +1,1 @@
+# Scanner-android-per-Carico-Tom
