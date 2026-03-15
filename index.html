@@ -98,6 +98,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   font-family:'IBM Plex Mono',monospace;font-size:.82rem;font-weight:700;
   cursor:pointer;letter-spacing:.05em;
 }
+.btn-pause-sess{
+  width:100%;margin-top:6px;padding:11px;
+  background:none;color:var(--pause);border:1px solid rgba(167,139,250,.4);
+  border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:700;
+  cursor:pointer;letter-spacing:.04em;transition:background .2s;
+}
+.btn-pause-sess:active{background:rgba(167,139,250,.15);}
 .sb-active-info{display:flex;flex-direction:column;gap:4px;}
 .sb-client{font-weight:700;font-size:1rem;color:var(--ok);}
 .sb-order{font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--acc);}
@@ -364,6 +371,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
           <div class="sb-prog" id="sbProg">—</div>
         </div>
         <div class="sb-progbar"><div class="sb-progfill" id="sbProgFill" style="width:0%"></div></div>
+        <button class="btn-pause-sess" id="btnPauseSess" onclick="pauseCurrentSession()" style="margin-top:8px">⏸ METTI IN PAUSA</button>
       </div>
     </div>
 
@@ -631,6 +639,10 @@ function endSession(){
   SESS.active=false;SESS.client=null;SESS.order=null;
   updateSessionUI();
   showToast('Sessione terminata','paused');
+}
+function pauseCurrentSession(){
+  if(!SESS.active) return;
+  pauseOrder(SESS.order, SESS.client);
 }
 function updateSessionUI(){
   const bar=document.getElementById('sessBar');
@@ -929,7 +941,11 @@ function processScan(raw,source='scanner',bypass=false){
     if(!isPaused){showToast(`🎉 Ordine ${orderNum} completato!`,'complete');playBeep('complete');}
     addLog(`Ordine ${orderNum}: COMPLETATO ✓`,'ok');
   } else {
-    setStatus(`✅ Collo ${cIdx}/${fOrder.total} — ${fClient} — mancano ${rem}`,'ok');
+    // Build list of missing collos
+    const missList=[];
+    for(let i=1;i<=fOrder.total;i++) if(!fOrder.scanned.has(i)) missList.push(i);
+    const missStr=missList.length<=15 ? missList.join(', ') : missList.slice(0,15).join(', ')+'…';
+    setStatus(`✅ Collo ${cIdx}/${fOrder.total} — mancano ${rem}: [${missStr}]`,'ok');
     addLog(`${orderNum}: collo ${cIdx}/${fOrder.total} ✓`,'ok');
   }
   if(clientDone(fClient)) showToast(`🏆 Cliente "${fClient}" completato!`,'complete');
