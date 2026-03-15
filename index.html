@@ -818,10 +818,10 @@ function startCooldown(){
 function parseBarcode(raw){
   raw=raw.trim();
   let orderNum=null,cIdx=null,cTot=null;
-  const m1=raw.match(/^(\d+)[_\-\s|,;](\d+)\/(\d+)$/);
-  const m2=raw.match(/^(\d+)[_\-\s|,;](\d+)$/);
+  const m1=raw.match(/^(\d+)[_\-\s|,;'](\d+)\/(\d+)$/);
+  const m2=raw.match(/^(\d+)[_\-\s|,;'](\d+)$/);
   const m3=raw.match(/^(\d+)$/);
-  const m4=raw.match(/^(\d+?)(\d{2})-(\d{1,3})$/);
+  const m4=raw.match(/^(\d+?)(\d{2})[\-'](\d{1,3})$/);
   if(m1){orderNum=m1[1];cIdx=+m1[2];cTot=+m1[3];}
   else if(m2){orderNum=m2[1];cIdx=+m2[2];}
   else if(m3){orderNum=m3[1];}
@@ -840,7 +840,7 @@ function parseBarcode(raw){
       orderNum=m4[1]+m4[2]; cIdx=afterDash;
     }
   } else {
-    const p=raw.split(/[\s_\-|,;]+/);
+    const p=raw.split(/[\s_\-|,;']+/);
     if(p.length>=2){orderNum=p[0].replace(/\D/g,'');const q=p[1].split('/');cIdx=+q[0];if(q[1])cTot=+q[1];}
   }
   return{orderNum,cIdx,cTot};
