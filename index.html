@@ -248,16 +248,82 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .btn-unpause{padding:6px 10px;background:var(--pause);color:#1a1030;border:none;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:.62rem;font-weight:700;cursor:pointer;}
 .oi-desc{font-size:.72rem;color:var(--muted);margin-bottom:8px;line-height:1.4;}
 .colli-grid{display:flex;flex-wrap:wrap;gap:3px;}
+/* ══ COLLI CLICCABILI + QUICK INPUT ══ */
 .collo{
   width:26px;height:26px;border-radius:4px;display:flex;align-items:center;justify-content:center;
   font-family:'IBM Plex Mono',monospace;font-size:.55rem;font-weight:700;
   border:1px solid var(--border);background:var(--surf2);color:var(--muted);
-  transition:all .3s;
+  transition:all .3s;cursor:pointer;user-select:none;
 }
+.collo:active{transform:scale(.88);}
 .collo.done{background:rgba(0,200,150,.2);border-color:var(--ok);color:var(--ok);}
 .collo.miss{background:rgba(255,140,0,.15);border-color:var(--warn);color:var(--warn);}
 .collo.hi{animation:boop .6s ease;}
+
+.quick-bar{display:flex;gap:6px;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.quick-bar input{
+  flex:1;background:var(--surf2);border:1px solid var(--border);border-radius:8px;
+  padding:9px 10px;color:var(--text);font-family:'IBM Plex Mono',monospace;
+  font-size:.85rem;outline:none;min-width:0;
+}
+.quick-bar input:focus{border-color:var(--acc);}
+.quick-bar input::placeholder{color:var(--muted);font-size:.65rem;}
+.btn-quick{
+  padding:9px 14px;background:var(--acc);color:#000;border:none;
+  border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:.75rem;
+  font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;
+}
+
+/* ══ CONFIRM MODAL (spunta/de-spunta) ══ */
+#modalConf{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
+#modalConf.show{display:flex;}
+.conf-sheet{background:var(--surf);border-radius:16px;width:100%;max-width:340px;padding:22px 20px;animation:sheetUp .2s ease;}
+.conf-icon{font-size:2rem;text-align:center;margin-bottom:8px;}
+.conf-title{font-family:'IBM Plex Mono',monospace;font-size:.9rem;font-weight:700;text-align:center;margin-bottom:6px;}
+.conf-title.add{color:var(--ok);}
+.conf-title.rem{color:var(--err);}
+.conf-body{font-size:.8rem;color:var(--muted);text-align:center;line-height:1.6;margin-bottom:18px;}
+.conf-body b{color:var(--text);}
+.conf-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-conf-no{padding:13px;background:var(--surf2);color:var(--muted);border:1px solid var(--border);border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.8rem;cursor:pointer;}
+.btn-conf-yes-add{padding:13px;background:var(--ok);color:#000;border:none;border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.8rem;font-weight:700;cursor:pointer;}
+.btn-conf-yes-rem{padding:13px;background:var(--err);color:#fff;border:none;border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.8rem;font-weight:700;cursor:pointer;}
 @keyframes boop{0%{transform:scale(1)}40%{transform:scale(1.7);box-shadow:0 0 12px var(--ok)}100%{transform:scale(1.05)}}
+
+/* Spunta rapida dentro ordine */
+.oi-spunta{display:flex;align-items:center;gap:6px;margin-top:8px;margin-bottom:6px;}
+.oi-spunta input{
+  flex:1;background:var(--surf2);border:1px solid var(--border);border-radius:7px;
+  padding:9px 10px;color:var(--text);font-family:'IBM Plex Mono',monospace;
+  font-size:.85rem;outline:none;min-width:0;
+}
+.oi-spunta input:focus{border-color:var(--acc);}
+.oi-spunta input::placeholder{color:var(--muted);font-size:.7rem;}
+.btn-spunta{
+  padding:9px 13px;background:var(--acc);color:#000;border:none;
+  border-radius:7px;font-family:'IBM Plex Mono',monospace;font-size:.75rem;
+  font-weight:700;cursor:pointer;white-space:nowrap;
+}
+
+/* Colli cliccabili */
+.collo{cursor:pointer;transition:all .2s;}
+.collo:not(.done):hover,.collo:not(.done):active{background:rgba(240,165,0,.2);border-color:var(--acc);color:var(--acc);transform:scale(1.15);}
+.collo.done:hover,.collo.done:active{background:rgba(255,74,74,.2);border-color:var(--err);color:var(--err);transform:scale(1.15);}
+
+/* Modal conferma spunta */
+#modalSpunta{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;display:none;align-items:flex-end;justify-content:center;padding:0 0 calc(var(--nav) + var(--safe)) 0;}
+#modalSpunta.show{display:flex;}
+.spunta-sheet{background:var(--surf);border-radius:18px 18px 0 0;width:100%;max-width:480px;padding:20px 20px 24px;animation:sheetUp .25s ease;}
+.spunta-drag{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px;}
+.spunta-icon{font-size:2rem;text-align:center;margin-bottom:6px;}
+.spunta-title{font-family:'IBM Plex Mono',monospace;font-size:.88rem;font-weight:700;text-align:center;margin-bottom:6px;}
+.spunta-title.add{color:var(--ok);}
+.spunta-title.remove{color:var(--err);}
+.spunta-body{font-size:.82rem;color:var(--text);line-height:1.6;text-align:center;margin-bottom:18px;}
+.spunta-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-spunta-no{padding:14px;background:var(--surf2);color:var(--muted);border:1px solid var(--border);border-radius:12px;font-family:'IBM Plex Mono',monospace;font-size:.82rem;cursor:pointer;}
+.btn-spunta-si-add{padding:14px;background:var(--ok);color:#000;border:none;border-radius:12px;font-family:'IBM Plex Mono',monospace;font-size:.82rem;font-weight:700;cursor:pointer;}
+.btn-spunta-si-rem{padding:14px;background:var(--err);color:#fff;border:none;border-radius:12px;font-family:'IBM Plex Mono',monospace;font-size:.82rem;font-weight:700;cursor:pointer;}
 
 .complete-banner{background:linear-gradient(135deg,rgba(0,200,150,.12),rgba(240,165,0,.08));border:1px solid var(--ok);border-radius:10px;padding:12px 16px;margin-bottom:12px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--ok);text-align:center;}
 
@@ -577,6 +643,20 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     <div class="nav-icon">📊</div>REPORT
   </button>
 </nav>
+
+<!-- Modal Spunta/De-spunta -->
+<div id="modalSpunta">
+  <div class="spunta-sheet">
+    <div class="spunta-drag"></div>
+    <div class="spunta-icon" id="spuntaIcon"></div>
+    <div class="spunta-title" id="spuntaTitle"></div>
+    <div class="spunta-body" id="spuntaBody"></div>
+    <div class="spunta-btns">
+      <button class="btn-spunta-no" onclick="closeSpunta()">✕ Annulla</button>
+      <button id="btnSpuntaSi" onclick="confirmSpunta()">✓ Conferma</button>
+    </div>
+  </div>
+</div>
 
 <!-- Modal Riconosci -->
 <div id="modalRic">
@@ -1016,6 +1096,11 @@ function processScan(raw,source='scanner',bypass=false){
   }
   const resolved=resolveOrder(orderNum);
   let fClient=resolved?.client||null,fOrder=resolved?.order||null;
+  const resolvedNum=resolved?.orderNum||null;
+  // Se resolveOrder ha usato il fallback (ha tolto cifre), avvisa sempre
+  if(resolved&&resolvedNum!==orderNum){
+    showToast(`⚠️ Ordine ${orderNum} → trovato come ${resolvedNum} (${fClient})`,'err');
+  }
   if(resolved) orderNum=resolved.orderNum;
   if(!fOrder){
     const sim=findSim(orderNum);
@@ -1055,16 +1140,17 @@ function processScan(raw,source='scanner',bypass=false){
     else playBeep('ok');
   } else playBeep('ok');
   const rem=fOrder.total-fOrder.scanned.size;
+  // Mostra cliente nel status quando fuori sessione o cliente diverso
+  const clientTag=(!SESS.active||fClient!==SESS.client)?` [${fClient}]`:'';
   if(rem===0){
-    setStatus(`✅ Ordine ${orderNum} COMPLETATO! Tutti i ${fOrder.total} colli.`,'ok');
+    setStatus(`✅ Ordine ${orderNum} COMPLETATO! Tutti i ${fOrder.total} colli.${clientTag}`,'ok');
     if(!isPaused){showToast(`🎉 Ordine ${orderNum} completato!`,'complete');playBeep('complete');}
     addLog(`Ordine ${orderNum}: COMPLETATO ✓`,'ok');
   } else {
-    // Build list of missing collos
     const missList=[];
     for(let i=1;i<=fOrder.total;i++) if(!fOrder.scanned.has(i)) missList.push(i);
-    const missStr=missList.length<=15 ? missList.join(', ') : missList.slice(0,15).join(', ')+'…';
-    setStatus(`✅ Collo ${cIdx}/${fOrder.total} — mancano ${rem}: [${missStr}]`,'ok');
+    const missStr=missList.length<=15?missList.join(', '):missList.slice(0,15).join(', ')+'…';
+    setStatus(`✅ Collo ${cIdx}/${fOrder.total} — mancano ${rem}: [${missStr}]${clientTag}`,'ok');
     addLog(`${orderNum}: collo ${cIdx}/${fOrder.total} ✓`,'ok');
   }
   if(clientDone(fClient)) showToast(`🏆 Cliente "${fClient}" completato!`,'complete');
@@ -1165,10 +1251,15 @@ function renderOrdini(){
           </div>
         </div>
         <div class="oi-desc">${escH(od.desc)}</div>
+        ${!odone?`<div class="oi-spunta">
+          <input type="number" min="1" max="${tot}" placeholder="N° collo (es. 18)" inputmode="numeric"
+            onkeydown="if(event.key==='Enter'){quickSpunta('${on}','${escH(cn)}',this.value);this.value='';}">
+          <button class="btn-spunta" onclick="quickSpuntaBtn('${on}','${escH(cn)}',this.previousElementSibling)">✓</button>
+        </div>`:''}
         <div class="colli-grid">`;
       for(let i=1;i<=tot;i++){
         const cls=od.scanned.has(i)?'done':(ip&&miss.includes(i))?'miss':'';
-        html+=`<div class="collo ${cls}" id="collo-${on}-${i}">${i}</div>`;
+        html+=`<div class="collo ${cls}" id="collo-${on}-${i}" onclick="clickCollo('${on}','${escH(cn)}',${i})">${i}</div>`;
       }
       html+=`</div></div>`;
     }
@@ -1176,6 +1267,91 @@ function renderOrdini(){
   }
   inner.innerHTML=html;
 }
+// ── SPUNTA MANUALE (click collo + campo rapido) ────────
+let _spuntaPending=null;
+
+function clickCollo(ord,cl,idx){
+  const o=S.clients[cl]?.orders[ord];if(!o)return;
+  const alreadyDone=o.scanned.has(idx);
+  _spuntaPending={ord,cl,idx,remove:alreadyDone};
+  document.getElementById('spuntaIcon').textContent=alreadyDone?'↩️':'✅';
+  const titleEl=document.getElementById('spuntaTitle');
+  titleEl.textContent=alreadyDone?`DE-SPUNTA COLLO ${idx}`:`SPUNTA COLLO ${idx}`;
+  titleEl.className='spunta-title '+(alreadyDone?'remove':'add');
+  document.getElementById('spuntaBody').innerHTML=
+    `Ordine <b>${ord}</b> — ${escH(cl)}<br>${alreadyDone?'Rimuovere la scansione del collo <b>'+idx+'</b>?':'Registrare il collo <b>'+idx+'/'+o.total+'</b> come scansionato?'}`;
+  const btnSi=document.getElementById('btnSpuntaSi');
+  btnSi.className=alreadyDone?'btn-spunta-si-rem':'btn-spunta-si-add';
+  btnSi.textContent=alreadyDone?'↩ Rimuovi':'✓ Spunta';
+  document.getElementById('modalSpunta').classList.add('show');
+}
+
+function quickSpunta(ord,cl,val){
+  const idx=parseInt(val);
+  const o=S.clients[cl]?.orders[ord];
+  if(!o||isNaN(idx)||idx<1||idx>o.total){
+    showToast(`❌ Collo non valido (1–${o?.total||'?'})`, 'err');playBeep('error');return;
+  }
+  clickCollo(ord,cl,idx);
+}
+function quickSpuntaBtn(ord,cl,input){
+  quickSpunta(ord,cl,input.value);
+  input.value='';
+}
+
+function closeSpunta(){
+  document.getElementById('modalSpunta').classList.remove('show');
+  _spuntaPending=null;
+}
+
+function confirmSpunta(){
+  if(!_spuntaPending){closeSpunta();return;}
+  const {ord,cl,idx,remove}=_spuntaPending;
+  closeSpunta();
+  const o=S.clients[cl]?.orders[ord];if(!o)return;
+
+  if(remove){
+    // De-spunta
+    if(!o.scanned.has(idx)){showToast('Collo non presente','err');return;}
+    o.scanned.delete(idx);
+    // se era in pausa, riaggiungi ai missing
+    if(S.paused[ord]&&!S.paused[ord].missing.includes(idx)){
+      S.paused[ord].missing.push(idx);
+      S.paused[ord].missing.sort((a,b)=>a-b);
+    }
+    addLog(`${ord}: collo ${idx} DE-SPUNTATO (manuale)`,'dup');
+    showToast(`↩ Collo ${idx} rimosso dall'ordine ${ord}`,'err');
+    playBeep('dup');
+  } else {
+    // Spunta
+    if(o.scanned.has(idx)){showToast(`⚠️ Collo ${idx} già scansionato!`,'err');playBeep('dup');return;}
+    o.scanned.add(idx);
+    // aggiorna pausa se necessario
+    if(S.paused[ord]){
+      S.paused[ord].missing=S.paused[ord].missing.filter(x=>x!==idx);
+      if(!S.paused[ord].missing.length){delete S.paused[ord];showToast(`✅ Ordine ${ord} in pausa completato!`,'complete');playBeep('complete');}
+    }
+    const rem=o.total-o.scanned.size;
+    if(rem===0){
+      showToast(`🎉 Ordine ${ord} COMPLETATO!`,'complete');playBeep('complete');
+      addLog(`${ord}: COMPLETATO ✓ (manuale)`,'ok');
+    } else {
+      showToast(`✅ Collo ${idx}/${o.total} spuntato (${ord})`,'ok');playBeep('ok');
+      addLog(`${ord}: collo ${idx}/${o.total} ✓ (manuale)`,'ok');
+    }
+    if(clientDone(cl)) showToast(`🏆 Cliente "${cl}" completato!`,'complete');
+  }
+  renderAll();
+  saveState();
+}
+
+// chiudi cliccando fuori
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('modalSpunta').addEventListener('click',function(e){
+    if(e.target===this) closeSpunta();
+  });
+});
+
 function renderPausa(){
   const inner=document.getElementById('pausaInner');
   const entries=Object.entries(S.paused);
