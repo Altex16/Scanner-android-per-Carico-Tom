@@ -186,6 +186,15 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .scan-status.err{border-color:var(--err);color:var(--err);background:rgba(255,74,74,.05);}
 .scan-status.warn{border-color:var(--warn);color:var(--warn);background:rgba(255,140,0,.05);}
 
+/* Riconosci pacco btn */
+.btn-ric{
+  width:100%;padding:12px;background:none;color:var(--cam);
+  border:1px solid rgba(56,189,248,.35);border-radius:10px;
+  font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:700;
+  cursor:pointer;letter-spacing:.04em;transition:background .2s;
+}
+.btn-ric:active{background:rgba(56,189,248,.1);}
+
 /* Audio btn */
 .audio-row{display:flex;align-items:center;justify-content:space-between;}
 .audio-btn{
@@ -299,6 +308,26 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .btn-mno{padding:14px;background:var(--ok);color:#000;border:none;border-radius:12px;font-family:'IBM Plex Mono',monospace;font-size:.82rem;font-weight:700;cursor:pointer;}
 .btn-myes{padding:14px;background:var(--surf2);color:var(--muted);border:1px solid var(--border);border-radius:12px;font-family:'IBM Plex Mono',monospace;font-size:.82rem;cursor:pointer;}
 
+/* ══ RICONOSCI MODAL ══ */
+#modalRic{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;display:none;align-items:flex-end;justify-content:center;padding:0 0 calc(var(--nav) + var(--safe)) 0;}
+#modalRic.show{display:flex;}
+.ric-sheet{background:var(--surf);border-radius:18px 18px 0 0;width:100%;max-width:480px;padding:20px 20px 24px;animation:sheetUp .25s ease;}
+.ric-drag{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px;}
+.ric-title{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.ric-input-wrap{position:relative;margin-bottom:10px;}
+.ric-input-wrap input{width:100%;background:var(--surf2);border:2px solid var(--border);border-radius:10px;padding:13px 13px 13px 42px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:.95rem;outline:none;transition:all .2s;}
+.ric-input-wrap input:focus{border-color:var(--acc);}
+.ric-input-ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:.95rem;opacity:.4;}
+.ric-result{background:var(--surf2);border:1px solid var(--border);border-radius:10px;padding:14px;min-height:64px;margin-bottom:12px;display:none;}
+.ric-result.ok{border-color:var(--ok);background:rgba(0,200,150,.05);}
+.ric-result.err{border-color:var(--err);background:rgba(255,74,74,.05);}
+.ric-res-client{font-weight:700;font-size:1rem;color:var(--ok);margin-bottom:4px;}
+.ric-res-order{font-family:'IBM Plex Mono',monospace;font-size:.82rem;color:var(--acc);margin-bottom:2px;}
+.ric-res-colli{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--text);margin-bottom:2px;}
+.ric-res-desc{font-size:.7rem;color:var(--muted);margin-top:4px;}
+.ric-res-err{font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--err);}
+.ric-close{width:100%;padding:12px;background:var(--surf2);color:var(--muted);border:1px solid var(--border);border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;cursor:pointer;}
+
 /* Toast */
 #toast{position:fixed;top:calc(var(--hdr) + 10px);left:50%;transform:translateX(-50%) translateY(-20px);background:var(--surf2);border:1px solid var(--border);border-radius:10px;padding:10px 18px;font-family:'IBM Plex Mono',monospace;font-size:.76rem;opacity:0;transition:all .3s;pointer-events:none;z-index:400;white-space:nowrap;max-width:90vw;text-align:center;}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -310,6 +339,42 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 /* Error flash full screen */
 #errFlash{position:fixed;inset:0;pointer-events:none;opacity:0;z-index:450;transition:opacity .12s;}
 #errFlash.show{opacity:1;}
+
+/* ══ RESTORE BANNER ══ */
+#restoreBanner{
+  position:fixed;top:var(--hdr);left:0;right:0;z-index:250;
+  background:rgba(0,200,150,.12);border-bottom:1px solid var(--ok);
+  padding:8px 14px;display:flex;align-items:center;justify-content:space-between;
+  font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--ok);
+  transform:translateY(-100%);transition:transform .3s;
+}
+#restoreBanner.show{transform:translateY(0);}
+#restoreBanner button{background:none;border:1px solid var(--ok);color:var(--ok);border-radius:5px;padding:3px 9px;font-family:'IBM Plex Mono',monospace;font-size:.62rem;cursor:pointer;}
+
+/* ══ PAGE: REPORT ══ */
+#page-report{background:var(--bg);}
+.report-inner{padding:12px 14px;}
+.report-section{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;}
+.report-title{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.report-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;}
+.rstat{background:var(--surf2);border-radius:8px;padding:10px 8px;text-align:center;}
+.rstat-num{font-family:'IBM Plex Mono',monospace;font-size:1.4rem;font-weight:700;color:var(--acc);}
+.rstat-num.ok{color:var(--ok);}
+.rstat-num.err{color:var(--err);}
+.rstat-num.pause{color:var(--pause);}
+.rstat-lbl{font-family:'IBM Plex Mono',monospace;font-size:.55rem;color:var(--muted);margin-top:3px;}
+.btn-report{
+  width:100%;padding:15px;background:var(--acc);color:#000;border:none;
+  border-radius:12px;font-family:'IBM Plex Mono',monospace;font-size:.88rem;
+  font-weight:700;cursor:pointer;letter-spacing:.05em;margin-bottom:10px;
+}
+.btn-report:disabled{opacity:.4;cursor:not-allowed;}
+.btn-clrsave{
+  width:100%;padding:12px;background:none;color:var(--err);
+  border:1px solid rgba(255,74,74,.3);border-radius:10px;
+  font-family:'IBM Plex Mono',monospace;font-size:.78rem;cursor:pointer;
+}
+.report-info{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--muted);line-height:1.7;margin-top:8px;}
 
 /* PC layout override */
 @media(min-width:700px){
@@ -324,10 +389,17 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   #page-ordini .ordini-inner{max-width:700px;margin:0 auto;}
   #page-pausa .pausa-inner{max-width:520px;margin:0 auto;}
   #page-log .log-inner{max-width:520px;margin:0 auto;}
+  #page-report .report-inner{max-width:520px;margin:0 auto;}
 }
 </style>
 </head>
 <body>
+
+<!-- RESTORE BANNER -->
+<div id="restoreBanner">
+  <span id="restoreMsg">✅ Progressi ripristinati</span>
+  <button onclick="dismissBanner()">✕</button>
+</div>
 
 <!-- TOP BAR -->
 <header class="topbar">
@@ -422,11 +494,14 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     <!-- Status -->
     <div class="scan-status" id="scanStatus">In attesa di scansione...</div>
 
+    <!-- Riconosci pacco -->
+    <button class="btn-ric" onclick="openRic()">🔍 RICONOSCI PACCO</button>
+
     <!-- Audio toggle -->
     <div class="audio-row">
-      <button class="audio-btn" id="audioBtn" onclick="toggleAudio()">
-        <div class="adot" id="adot"></div>
-        <span id="atxt">AUDIO OFF — tocca per attivare</span>
+      <button class="audio-btn on" id="audioBtn" onclick="toggleAudio()">
+        <div class="adot" id="adot" style="background:var(--ok)"></div>
+        <span id="atxt">AUDIO ON</span>
       </button>
     </div>
 
@@ -460,6 +535,27 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
+<!-- ── REPORT PAGE ── -->
+<div class="page" id="page-report">
+  <div class="report-inner">
+    <div class="report-section">
+      <div class="report-title">📊 Riepilogo carico</div>
+      <div class="report-stats">
+        <div class="rstat"><div class="rstat-num ok" id="rStatComp">0</div><div class="rstat-lbl">COMPLETATI</div></div>
+        <div class="rstat"><div class="rstat-num err" id="rStatInc">0</div><div class="rstat-lbl">INCOMPLETI</div></div>
+        <div class="rstat"><div class="rstat-num pause" id="rStatPause">0</div><div class="rstat-lbl">IN PAUSA</div></div>
+      </div>
+      <button class="btn-report" id="btnReport" onclick="downloadReport()">📥 SCARICA REPORT EXCEL</button>
+      <div class="report-info" id="reportInfo">Carica una lista Excel per generare il report.</div>
+    </div>
+    <div class="report-section">
+      <div class="report-title">💾 Dati salvati</div>
+      <div class="report-info" id="saveInfo">Nessun dato salvato in locale.</div>
+      <button class="btn-clrsave" onclick="clearSaved()">🗑 Cancella dati salvati</button>
+    </div>
+  </div>
+</div>
+
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav">
   <button class="nav-btn active" id="nav-scan"   onclick="goPage('scan')">
@@ -477,7 +573,26 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   <button class="nav-btn" id="nav-carica" onclick="document.getElementById('fileInput').click()">
     <div class="nav-icon">⬆️</div>CARICA
   </button>
+  <button class="nav-btn" id="nav-report" onclick="goPage('report')">
+    <div class="nav-icon">📊</div>REPORT
+  </button>
 </nav>
+
+<!-- Modal Riconosci -->
+<div id="modalRic">
+  <div class="ric-sheet">
+    <div class="ric-drag"></div>
+    <div class="ric-title">🔍 Riconosci pacco</div>
+    <div class="ric-input-wrap">
+      <span class="ric-input-ico">▮▮▯▮▯</span>
+      <input type="text" id="ricInput" placeholder="Scansiona o digita codice" autocomplete="off" inputmode="none">
+    </div>
+    <div class="ric-result" id="ricResult">
+      <div id="ricResultContent"></div>
+    </div>
+    <button class="ric-close" onclick="closeRic()">✕ CHIUDI</button>
+  </div>
+</div>
 
 <!-- Modal -->
 <div id="modal">
@@ -501,7 +616,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 <script src="https://unpkg.com/@zxing/library@0.19.1/umd/index.min.js"></script>
 <script>
 // ── AUDIO ─────────────────────────────────────────────
-let audioCtx=null, audioOn=false;
+let audioCtx=null, audioOn=true;
 function getCtx(){
   if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
   if(audioCtx.state==='suspended') audioCtx.resume();
@@ -558,6 +673,7 @@ function goPage(name){
   if(name!=='scan') stopCamera();
   if(name==='scan'&&document.getElementById('imode-scanner').classList.contains('active'))
     setTimeout(()=>document.getElementById('scanInput').focus(),100);
+  if(name==='report'){updateReportStats();updateSaveInfo();}
 }
 
 // ── FILE LOAD ─────────────────────────────────────────
@@ -587,6 +703,7 @@ function loadFile(file){
       updateSessionUI();
       showToast(`✅ Lista caricata: ${nc} clienti`,'ok');
       playBeep('ok');
+      saveState();
     }catch(err){showToast('❌ Errore: '+err.message,'err');}
   };
   r.readAsArrayBuffer(file);
@@ -634,11 +751,13 @@ function startSession(){
   updateSessionUI();
   showToast('✅ Sessione avviata: '+on,'ok');
   playBeep('ok');
+  saveState();
 }
 function endSession(){
   SESS.active=false;SESS.client=null;SESS.order=null;
   updateSessionUI();
   showToast('Sessione terminata','paused');
+  saveState();
 }
 function pauseCurrentSession(){
   if(!SESS.active) return;
@@ -951,6 +1070,7 @@ function processScan(raw,source='scanner',bypass=false){
   if(clientDone(fClient)) showToast(`🏆 Cliente "${fClient}" completato!`,'complete');
   renderAll();
   highlightCollo(orderNum,cIdx);
+  saveState();
   if(source==='scanner') setTimeout(()=>document.getElementById('scanInput').focus(),50);
   return true;
 }
@@ -965,12 +1085,14 @@ function pauseOrder(ord,cl){
   addLog(`Ordine ${ord} in PAUSA — ${miss.length} colli mancanti`,'psd');
   showToast(`⏸ Ordine ${ord} in pausa`,'paused');
   renderAll();
+  saveState();
 }
 function resumeOrder(ord){
   delete S.paused[ord];
   addLog(`Ordine ${ord}: pausa rimossa`,'ok');
   showToast(`▶ Ordine ${ord} ripreso`,'ok');
   renderAll();
+  saveState();
 }
 
 // ── SIMILARITY ───────────────────────────────────────
@@ -987,7 +1109,7 @@ function simScore(a,b){
 
 // ── RENDER ────────────────────────────────────────────
 function renderAll(){
-  updateTopBar();renderOrdini();renderPausa();
+  updateTopBar();renderOrdini();renderPausa();updateReportStats();
   if(SESS.active)refreshSessProg();
 }
 function updateTopBar(){
@@ -1114,6 +1236,245 @@ function doneOrders(){return Object.values(S.clients).reduce((a,c)=>a+Object.val
 function clientDone(n){const c=S.clients[n];return c?Object.values(c.orders).every(o=>o.scanned.size===o.total):false;}
 function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function escId(s){return String(s).replace(/[^a-zA-Z0-9]/g,'_');}
+
+// ── RICONOSCI PACCO ───────────────────────────────────
+function openRic(){
+  document.getElementById('ricInput').value='';
+  const r=document.getElementById('ricResult');
+  r.style.display='none';r.className='ric-result';
+  document.getElementById('modalRic').classList.add('show');
+  setTimeout(()=>document.getElementById('ricInput').focus(),200);
+}
+function closeRic(){
+  document.getElementById('modalRic').classList.remove('show');
+  // re-focus scanner if on scanner tab
+  if(document.getElementById('imode-scanner').classList.contains('active'))
+    setTimeout(()=>document.getElementById('scanInput').focus(),100);
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('ricInput').addEventListener('keydown',function(e){
+    if(e.key==='Enter'){const v=this.value.trim();if(v)riconosciPacco(v);}
+  });
+  document.getElementById('ricInput').addEventListener('input',function(){
+    const v=this.value.trim();
+    // auto-fire if looks complete (lettore fisico invia tutto in un colpo)
+    if(v.length>=4) setTimeout(()=>{if(this.value.trim()===v)riconosciPacco(v);},120);
+  });
+  // close on backdrop click
+  document.getElementById('modalRic').addEventListener('click',function(e){
+    if(e.target===this) closeRic();
+  });
+});
+function riconosciPacco(raw){
+  const res=document.getElementById('ricResult');
+  const cnt=document.getElementById('ricResultContent');
+  const {orderNum,cIdx,cTot}=parseBarcode(raw);
+  if(!orderNum){
+    res.className='ric-result err';res.style.display='block';
+    cnt.innerHTML=`<div class="ric-res-err">❌ Formato non riconosciuto: "${raw.substring(0,30)}"</div>`;
+    playBeep('error');return;
+  }
+  const resolved=resolveOrder(orderNum);
+  if(!resolved){
+    res.className='ric-result err';res.style.display='block';
+    cnt.innerHTML=`<div class="ric-res-err">❌ Ordine <b>${orderNum}</b> non trovato in lista</div>`;
+    playBeep('error');return;
+  }
+  const {client,order,orderNum:on}=resolved;
+  const sc=order.scanned.size,tot=order.total,rem=tot-sc;
+  const ip=!!S.paused[on];
+  const pct=tot>0?Math.round(sc/tot*100):0;
+  const colloInfo=cIdx?`Collo <b>${cIdx}</b>${cTot?' di '+cTot:''} · `:'';
+  const statusColor=sc===tot?'var(--ok)':ip?'var(--pause)':'var(--warn)';
+  const statusLabel=sc===tot?'✅ COMPLETATO':ip?'⏸ IN PAUSA':`⏳ ${rem} colli mancanti`;
+  res.className='ric-result ok';res.style.display='block';
+  cnt.innerHTML=`
+    <div class="ric-res-client">📦 ${escH(client)}</div>
+    <div class="ric-res-order">Ordine: ${on}</div>
+    <div class="ric-res-colli">${colloInfo}${sc}/${tot} colli scansionati (${pct}%)</div>
+    <div class="ric-res-colli" style="color:${statusColor}">${statusLabel}</div>
+    ${order.desc?`<div class="ric-res-desc">${escH(order.desc)}</div>`:''}
+  `;
+  playBeep('ok');
+  document.getElementById('ricInput').value='';
+  document.getElementById('ricInput').focus();
+}
+
+// ── LOCAL STORAGE ─────────────────────────────────────
+const LS_KEY = 'scanner_carico_v1';
+
+function saveState() {
+  try {
+    const data = {
+      clients: {},
+      paused: S.paused,
+      filter: S.filter,
+      sess: { active: SESS.active, client: SESS.client, order: SESS.order },
+      savedAt: new Date().toISOString()
+    };
+    for (const [cn, cd] of Object.entries(S.clients)) {
+      data.clients[cn] = { orders: {} };
+      for (const [on, od] of Object.entries(cd.orders)) {
+        data.clients[cn].orders[on] = {
+          total: od.total,
+          scanned: [...od.scanned],
+          desc: od.desc
+        };
+      }
+    }
+    localStorage.setItem(LS_KEY, JSON.stringify(data));
+    updateSaveInfo();
+  } catch(e) {}
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (!data.clients || !Object.keys(data.clients).length) return false;
+    S.clients = {};
+    for (const [cn, cd] of Object.entries(data.clients)) {
+      S.clients[cn] = { orders: {} };
+      for (const [on, od] of Object.entries(cd.orders)) {
+        S.clients[cn].orders[on] = {
+          total: od.total,
+          scanned: new Set(od.scanned || []),
+          desc: od.desc || ''
+        };
+      }
+    }
+    S.paused = data.paused || {};
+    S.filter = data.filter || 'all';
+    if (data.sess && data.sess.active) {
+      SESS.active = data.sess.active;
+      SESS.client = data.sess.client;
+      SESS.order = data.sess.order;
+    }
+    return data.savedAt || true;
+  } catch(e) { return false; }
+}
+
+function clearSaved() {
+  if (!confirm('Cancellare tutti i dati salvati? Questa azione è irreversibile.')) return;
+  localStorage.removeItem(LS_KEY);
+  S.clients = {}; S.paused = {}; S.filter = 'all';
+  SESS.active = false; SESS.client = null; SESS.order = null;
+  renderAll(); populateSelects(); updateSessionUI(); updateSaveInfo(); updateReportStats();
+  document.getElementById('topSub').textContent = 'Nessuna lista caricata';
+  showToast('🗑 Dati cancellati', 'err');
+}
+
+function updateSaveInfo() {
+  const el = document.getElementById('saveInfo');
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) { el.textContent = 'Nessun dato salvato in locale.'; return; }
+    const data = JSON.parse(raw);
+    const nc = Object.keys(data.clients || {}).length;
+    const no = Object.values(data.clients || {}).reduce((a,c)=>a+Object.keys(c.orders).length,0);
+    const date = data.savedAt ? new Date(data.savedAt).toLocaleString('it-IT') : '—';
+    el.textContent = `${nc} clienti · ${no} ordini salvati\nUltimo salvataggio: ${date}`;
+  } catch(e) { el.textContent = 'Errore lettura dati.'; }
+}
+
+function dismissBanner() {
+  document.getElementById('restoreBanner').classList.remove('show');
+}
+
+function updateReportStats() {
+  const orders = Object.values(S.clients).flatMap(c => Object.entries(c.orders));
+  const comp = orders.filter(([,o]) => o.scanned.size === o.total).length;
+  const paused = Object.keys(S.paused).length;
+  const inc = orders.length - comp;
+  document.getElementById('rStatComp').textContent = comp;
+  document.getElementById('rStatInc').textContent = inc;
+  document.getElementById('rStatPause').textContent = paused;
+  const btnR = document.getElementById('btnReport');
+  const info = document.getElementById('reportInfo');
+  if (!orders.length) {
+    btnR.disabled = true;
+    info.textContent = 'Carica una lista Excel per generare il report.';
+  } else {
+    btnR.disabled = false;
+    const sc = orders.reduce((a,[,o])=>a+o.scanned.size,0);
+    const tot = orders.reduce((a,[,o])=>a+o.total,0);
+    info.textContent = `${orders.length} ordini · ${sc}/${tot} colli scansionati\n${comp} completati · ${inc} incompleti · ${paused} in pausa`;
+  }
+}
+
+// ── REPORT EXCEL ──────────────────────────────────────
+function downloadReport() {
+  try {
+    const wb = XLSX.utils.book_new();
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('it-IT').replace(/\//g,'-');
+
+    // ── Foglio 1: Completati
+    const comp = [];
+    comp.push(['Cliente','Ordine','Colli Totali','Colli Scansionati','Descrizione']);
+    for (const [cn, cd] of Object.entries(S.clients))
+      for (const [on, od] of Object.entries(cd.orders))
+        if (od.scanned.size === od.total)
+          comp.push([cn, on, od.total, od.scanned.size, od.desc]);
+    const wsComp = XLSX.utils.aoa_to_sheet(comp);
+    wsComp['!cols'] = [{wch:30},{wch:12},{wch:14},{wch:18},{wch:40}];
+    XLSX.utils.book_append_sheet(wb, wsComp, 'Completati');
+
+    // ── Foglio 2: Incompleti
+    const inc = [];
+    inc.push(['Cliente','Ordine','Colli Totali','Scansionati','Mancanti','Lista Mancanti','Descrizione']);
+    for (const [cn, cd] of Object.entries(S.clients))
+      for (const [on, od] of Object.entries(cd.orders))
+        if (od.scanned.size < od.total) {
+          const miss = [];
+          for (let i=1; i<=od.total; i++) if (!od.scanned.has(i)) miss.push(i);
+          inc.push([cn, on, od.total, od.scanned.size, miss.length, miss.join(', '), od.desc]);
+        }
+    const wsInc = XLSX.utils.aoa_to_sheet(inc);
+    wsInc['!cols'] = [{wch:30},{wch:12},{wch:14},{wch:14},{wch:10},{wch:50},{wch:40}];
+    XLSX.utils.book_append_sheet(wb, wsInc, 'Incompleti');
+
+    // ── Foglio 3: In Pausa
+    const psd = [];
+    psd.push(['Ordine','Cliente','Colli Totali','Scansionati','Mancanti','Lista Mancanti','Descrizione']);
+    for (const [on, pd] of Object.entries(S.paused)) {
+      const od = S.clients[pd.clientName]?.orders[on];
+      if (!od) continue;
+      psd.push([on, pd.clientName, od.total, od.scanned.size, pd.missing.length, pd.missing.join(', '), od.desc]);
+    }
+    if (psd.length === 1) psd.push(['(nessun ordine in pausa)','','','','','','']);
+    const wsPsd = XLSX.utils.aoa_to_sheet(psd);
+    wsPsd['!cols'] = [{wch:12},{wch:30},{wch:14},{wch:14},{wch:10},{wch:50},{wch:40}];
+    XLSX.utils.book_append_sheet(wb, wsPsd, 'In Pausa');
+
+    XLSX.writeFile(wb, `report_carico_${dateStr}.xlsx`);
+    showToast('📥 Report scaricato!', 'ok');
+    playBeep('ok');
+  } catch(e) {
+    showToast('❌ Errore report: '+e.message, 'err');
+  }
+}
+
+// ── INIT: ripristina da localStorage ─────────────────
+(function initFromStorage() {
+  const savedAt = loadState();
+  if (savedAt) {
+    const nc = Object.keys(S.clients).length;
+    const no = Object.values(S.clients).reduce((a,c)=>a+Object.keys(c.orders).length,0);
+    document.getElementById('topSub').textContent = `${nc} clienti · ${no} ordini · ${totColli()} colli`;
+    renderAll();
+    populateSelects();
+    updateSessionUI();
+    updateReportStats();
+    updateSaveInfo();
+    const banner = document.getElementById('restoreBanner');
+    const date = typeof savedAt === 'string' ? new Date(savedAt).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}) : '';
+    document.getElementById('restoreMsg').textContent = `✅ Progressi ripristinati${date?' ('+date+')':''}`;
+    banner.classList.add('show');
+    setTimeout(() => banner.classList.remove('show'), 4000);
+  }
+})();
 
 // Keep scanner focused when on scan page in scanner mode
 setInterval(()=>{
