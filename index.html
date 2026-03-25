@@ -186,15 +186,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .scan-status.err{border-color:var(--err);color:var(--err);background:rgba(255,74,74,.05);}
 .scan-status.warn{border-color:var(--warn);color:var(--warn);background:rgba(255,140,0,.05);}
 
-/* Riconosci pacco btn */
-.btn-ric{
-  width:100%;padding:12px;background:none;color:var(--cam);
-  border:1px solid rgba(56,189,248,.35);border-radius:10px;
-  font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:700;
-  cursor:pointer;letter-spacing:.04em;transition:background .2s;
-}
-.btn-ric:active{background:rgba(56,189,248,.1);}
-
 /* Audio btn */
 .audio-row{display:flex;align-items:center;justify-content:space-between;}
 .audio-btn{
@@ -248,82 +239,16 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .btn-unpause{padding:6px 10px;background:var(--pause);color:#1a1030;border:none;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:.62rem;font-weight:700;cursor:pointer;}
 .oi-desc{font-size:.72rem;color:var(--muted);margin-bottom:8px;line-height:1.4;}
 .colli-grid{display:flex;flex-wrap:wrap;gap:3px;}
-/* ══ COLLI CLICCABILI + QUICK INPUT ══ */
 .collo{
   width:26px;height:26px;border-radius:4px;display:flex;align-items:center;justify-content:center;
   font-family:'IBM Plex Mono',monospace;font-size:.55rem;font-weight:700;
   border:1px solid var(--border);background:var(--surf2);color:var(--muted);
-  transition:all .3s;cursor:pointer;user-select:none;
+  transition:all .3s;
 }
-.collo:active{transform:scale(.88);}
 .collo.done{background:rgba(0,200,150,.2);border-color:var(--ok);color:var(--ok);}
 .collo.miss{background:rgba(255,140,0,.15);border-color:var(--warn);color:var(--warn);}
 .collo.hi{animation:boop .6s ease;}
-
-.quick-bar{display:flex;gap:6px;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
-.quick-bar input{
-  flex:1;background:var(--surf2);border:1px solid var(--border);border-radius:8px;
-  padding:9px 10px;color:var(--text);font-family:'IBM Plex Mono',monospace;
-  font-size:.85rem;outline:none;min-width:0;
-}
-.quick-bar input:focus{border-color:var(--acc);}
-.quick-bar input::placeholder{color:var(--muted);font-size:.65rem;}
-.btn-quick{
-  padding:9px 14px;background:var(--acc);color:#000;border:none;
-  border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:.75rem;
-  font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;
-}
-
-/* ══ CONFIRM MODAL (spunta/de-spunta) ══ */
-#modalConf{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
-#modalConf.show{display:flex;}
-.conf-sheet{background:var(--surf);border-radius:16px;width:100%;max-width:340px;padding:22px 20px;animation:sheetUp .2s ease;}
-.conf-icon{font-size:2rem;text-align:center;margin-bottom:8px;}
-.conf-title{font-family:'IBM Plex Mono',monospace;font-size:.9rem;font-weight:700;text-align:center;margin-bottom:6px;}
-.conf-title.add{color:var(--ok);}
-.conf-title.rem{color:var(--err);}
-.conf-body{font-size:.8rem;color:var(--muted);text-align:center;line-height:1.6;margin-bottom:18px;}
-.conf-body b{color:var(--text);}
-.conf-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.btn-conf-no{padding:13px;background:var(--surf2);color:var(--muted);border:1px solid var(--border);border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.8rem;cursor:pointer;}
-.btn-conf-yes-add{padding:13px;background:var(--ok);color:#000;border:none;border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.8rem;font-weight:700;cursor:pointer;}
-.btn-conf-yes-rem{padding:13px;background:var(--err);color:#fff;border:none;border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.8rem;font-weight:700;cursor:pointer;}
 @keyframes boop{0%{transform:scale(1)}40%{transform:scale(1.7);box-shadow:0 0 12px var(--ok)}100%{transform:scale(1.05)}}
-
-/* Spunta rapida dentro ordine */
-.oi-spunta{display:flex;align-items:center;gap:6px;margin-top:8px;margin-bottom:6px;}
-.oi-spunta input{
-  flex:1;background:var(--surf2);border:1px solid var(--border);border-radius:7px;
-  padding:9px 10px;color:var(--text);font-family:'IBM Plex Mono',monospace;
-  font-size:.85rem;outline:none;min-width:0;
-}
-.oi-spunta input:focus{border-color:var(--acc);}
-.oi-spunta input::placeholder{color:var(--muted);font-size:.7rem;}
-.btn-spunta{
-  padding:9px 13px;background:var(--acc);color:#000;border:none;
-  border-radius:7px;font-family:'IBM Plex Mono',monospace;font-size:.75rem;
-  font-weight:700;cursor:pointer;white-space:nowrap;
-}
-
-/* Colli cliccabili */
-.collo{cursor:pointer;transition:all .2s;}
-.collo:not(.done):hover,.collo:not(.done):active{background:rgba(240,165,0,.2);border-color:var(--acc);color:var(--acc);transform:scale(1.15);}
-.collo.done:hover,.collo.done:active{background:rgba(255,74,74,.2);border-color:var(--err);color:var(--err);transform:scale(1.15);}
-
-/* Modal conferma spunta */
-#modalSpunta{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;display:none;align-items:flex-end;justify-content:center;padding:0 0 calc(var(--nav) + var(--safe)) 0;}
-#modalSpunta.show{display:flex;}
-.spunta-sheet{background:var(--surf);border-radius:18px 18px 0 0;width:100%;max-width:480px;padding:20px 20px 24px;animation:sheetUp .25s ease;}
-.spunta-drag{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px;}
-.spunta-icon{font-size:2rem;text-align:center;margin-bottom:6px;}
-.spunta-title{font-family:'IBM Plex Mono',monospace;font-size:.88rem;font-weight:700;text-align:center;margin-bottom:6px;}
-.spunta-title.add{color:var(--ok);}
-.spunta-title.remove{color:var(--err);}
-.spunta-body{font-size:.82rem;color:var(--text);line-height:1.6;text-align:center;margin-bottom:18px;}
-.spunta-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.btn-spunta-no{padding:14px;background:var(--surf2);color:var(--muted);border:1px solid var(--border);border-radius:12px;font-family:'IBM Plex Mono',monospace;font-size:.82rem;cursor:pointer;}
-.btn-spunta-si-add{padding:14px;background:var(--ok);color:#000;border:none;border-radius:12px;font-family:'IBM Plex Mono',monospace;font-size:.82rem;font-weight:700;cursor:pointer;}
-.btn-spunta-si-rem{padding:14px;background:var(--err);color:#fff;border:none;border-radius:12px;font-family:'IBM Plex Mono',monospace;font-size:.82rem;font-weight:700;cursor:pointer;}
 
 .complete-banner{background:linear-gradient(135deg,rgba(0,200,150,.12),rgba(240,165,0,.08));border:1px solid var(--ok);border-radius:10px;padding:12px 16px;margin-bottom:12px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--ok);text-align:center;}
 
@@ -374,7 +299,61 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .btn-mno{padding:14px;background:var(--ok);color:#000;border:none;border-radius:12px;font-family:'IBM Plex Mono',monospace;font-size:.82rem;font-weight:700;cursor:pointer;}
 .btn-myes{padding:14px;background:var(--surf2);color:var(--muted);border:1px solid var(--border);border-radius:12px;font-family:'IBM Plex Mono',monospace;font-size:.82rem;cursor:pointer;}
 
-/* ══ RICONOSCI MODAL ══ */
+/* Toast */
+#toast{position:fixed;top:calc(var(--hdr) + 10px);left:50%;transform:translateX(-50%) translateY(-20px);background:var(--surf2);border:1px solid var(--border);border-radius:10px;padding:10px 18px;font-family:'IBM Plex Mono',monospace;font-size:.76rem;opacity:0;transition:all .3s;pointer-events:none;z-index:400;white-space:nowrap;max-width:90vw;text-align:center;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#toast.ok     {border-color:var(--ok);color:var(--ok);}
+#toast.err    {border-color:var(--err);color:var(--err);}
+#toast.complete{border-color:var(--acc);color:var(--acc);background:rgba(240,165,0,.1);}
+#toast.paused {border-color:var(--pause);color:var(--pause);}
+
+/* Error flash full screen */
+#errFlash{position:fixed;inset:0;pointer-events:none;opacity:0;z-index:450;transition:opacity .12s;}
+#errFlash.show{opacity:1;}
+
+
+/* ══ RESTORE BANNER ══ */
+#restoreBanner{
+  position:fixed;top:var(--hdr);left:0;right:0;z-index:250;
+  background:rgba(0,200,150,.12);border-bottom:1px solid var(--ok);
+  padding:8px 14px;display:flex;align-items:center;justify-content:space-between;
+  font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--ok);
+  transform:translateY(-100%);transition:transform .3s;
+}
+#restoreBanner.show{transform:translateY(0);}
+#restoreBanner button{background:none;border:1px solid var(--ok);color:var(--ok);border-radius:5px;padding:3px 9px;font-family:'IBM Plex Mono',monospace;font-size:.62rem;cursor:pointer;}
+
+/* ══ COLLI CLICCABILI ══ */
+.collo{cursor:pointer;transition:all .2s;position:relative;}
+.collo:not(.done):hover,.collo:not(.done):active{background:rgba(240,165,0,.2);border-color:var(--acc);color:var(--acc);transform:scale(1.15);}
+.collo.done:hover,.collo.done:active{background:rgba(255,74,74,.2);border-color:var(--err);color:var(--err);transform:scale(1.15);}
+.collo.has-info::after{content:'';position:absolute;top:1px;right:1px;width:4px;height:4px;border-radius:50%;background:var(--cam);}
+
+/* ══ SPUNTA RAPIDA ══ */
+.oi-spunta{display:flex;align-items:center;gap:6px;margin-top:8px;margin-bottom:6px;}
+.oi-spunta input{flex:1;background:var(--surf2);border:1px solid var(--border);border-radius:7px;padding:9px 10px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:.85rem;outline:none;min-width:0;}
+.oi-spunta input:focus{border-color:var(--acc);}
+.oi-spunta input::placeholder{color:var(--muted);font-size:.7rem;}
+.btn-spunta{padding:9px 13px;background:var(--acc);color:#000;border:none;border-radius:7px;font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:700;cursor:pointer;white-space:nowrap;}
+
+/* ══ MODAL SPUNTA ══ */
+#modalSpunta{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;display:none;align-items:flex-end;justify-content:center;padding:0 0 calc(var(--nav) + var(--safe)) 0;}
+#modalSpunta.show{display:flex;}
+.spunta-sheet{background:var(--surf);border-radius:18px 18px 0 0;width:100%;max-width:480px;padding:20px 20px 24px;animation:sheetUp .25s ease;}
+.spunta-drag{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px;}
+.spunta-icon{font-size:2rem;text-align:center;margin-bottom:6px;}
+.spunta-title{font-family:'IBM Plex Mono',monospace;font-size:.88rem;font-weight:700;text-align:center;margin-bottom:6px;}
+.spunta-title.add{color:var(--ok);}
+.spunta-title.remove{color:var(--err);}
+.spunta-body{font-size:.82rem;color:var(--text);line-height:1.6;text-align:center;margin-bottom:18px;}
+.spunta-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-spunta-no{padding:14px;background:var(--surf2);color:var(--muted);border:1px solid var(--border);border-radius:12px;font-family:'IBM Plex Mono',monospace;font-size:.82rem;cursor:pointer;}
+.btn-spunta-si-add{padding:14px;background:var(--ok);color:#000;border:none;border-radius:12px;font-family:'IBM Plex Mono',monospace;font-size:.82rem;font-weight:700;cursor:pointer;}
+.btn-spunta-si-rem{padding:14px;background:var(--err);color:#fff;border:none;border-radius:12px;font-family:'IBM Plex Mono',monospace;font-size:.82rem;font-weight:700;cursor:pointer;}
+
+/* ══ RICONOSCI PACCO ══ */
+.btn-ric{width:100%;padding:12px;background:none;color:var(--cam);border:1px solid rgba(56,189,248,.35);border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:background .2s;}
+.btn-ric:active{background:rgba(56,189,248,.1);}
 #modalRic{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;display:none;align-items:flex-end;justify-content:center;padding:0 0 calc(var(--nav) + var(--safe)) 0;}
 #modalRic.show{display:flex;}
 .ric-sheet{background:var(--surf);border-radius:18px 18px 0 0;width:100%;max-width:480px;padding:20px 20px 24px;animation:sheetUp .25s ease;}
@@ -394,28 +373,39 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .ric-res-err{font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--err);}
 .ric-close{width:100%;padding:12px;background:var(--surf2);color:var(--muted);border:1px solid var(--border);border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;cursor:pointer;}
 
-/* Toast */
-#toast{position:fixed;top:calc(var(--hdr) + 10px);left:50%;transform:translateX(-50%) translateY(-20px);background:var(--surf2);border:1px solid var(--border);border-radius:10px;padding:10px 18px;font-family:'IBM Plex Mono',monospace;font-size:.76rem;opacity:0;transition:all .3s;pointer-events:none;z-index:400;white-space:nowrap;max-width:90vw;text-align:center;}
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-#toast.ok     {border-color:var(--ok);color:var(--ok);}
-#toast.err    {border-color:var(--err);color:var(--err);}
-#toast.complete{border-color:var(--acc);color:var(--acc);background:rgba(240,165,0,.1);}
-#toast.paused {border-color:var(--pause);color:var(--pause);}
+/* ══ MODAL COLLO INFO PDF ══ */
+#modalCollo{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:600;display:none;align-items:flex-end;justify-content:center;padding:0 0 calc(var(--nav) + var(--safe)) 0;}
+#modalCollo.show{display:flex;}
+.collo-sheet{background:var(--surf);border-radius:18px 18px 0 0;width:100%;max-width:480px;padding:20px 20px 24px;animation:sheetUp .25s ease;max-height:75vh;overflow-y:auto;}
+.collo-sheet::-webkit-scrollbar{display:none;}
+.collo-drag{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px;}
+.collo-ord{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--muted);margin-bottom:2px;}
+.collo-idx{font-family:'IBM Plex Mono',monospace;font-size:1.5rem;font-weight:700;color:var(--acc);margin-bottom:8px;}
+.collo-nome{font-size:.95rem;font-weight:700;color:var(--text);line-height:1.4;margin-bottom:6px;}
+.collo-dim{font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--cam);margin-bottom:10px;letter-spacing:.05em;}
+.collo-attrs{font-size:.75rem;color:var(--muted);line-height:1.7;margin-bottom:14px;}
+.collo-attrs b{color:var(--text);}
+.collo-nopdf{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted);text-align:center;padding:12px 0 6px;}
+.collo-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-collo-close{padding:13px;background:var(--surf2);color:var(--muted);border:1px solid var(--border);border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;cursor:pointer;}
+.btn-collo-spunta{padding:13px;background:var(--ok);color:#000;border:none;border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:700;cursor:pointer;}
+.btn-collo-despunta{padding:13px;background:var(--err);color:#fff;border:none;border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:700;cursor:pointer;}
 
-/* Error flash full screen */
-#errFlash{position:fixed;inset:0;pointer-events:none;opacity:0;z-index:450;transition:opacity .12s;}
-#errFlash.show{opacity:1;}
-
-/* ══ RESTORE BANNER ══ */
-#restoreBanner{
-  position:fixed;top:var(--hdr);left:0;right:0;z-index:250;
-  background:rgba(0,200,150,.12);border-bottom:1px solid var(--ok);
-  padding:8px 14px;display:flex;align-items:center;justify-content:space-between;
-  font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--ok);
-  transform:translateY(-100%);transition:transform .3s;
-}
-#restoreBanner.show{transform:translateY(0);}
-#restoreBanner button{background:none;border:1px solid var(--ok);color:var(--ok);border-radius:5px;padding:3px 9px;font-family:'IBM Plex Mono',monospace;font-size:.62rem;cursor:pointer;}
+/* ══ PAGE: PDF ══ */
+#page-pdf{background:var(--bg);}
+.pdf-inner{padding:12px 14px;}
+.pdf-section{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;}
+.pdf-title{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.btn-pdf-load{width:100%;padding:14px;background:var(--cam);color:#000;border:none;border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.85rem;font-weight:700;cursor:pointer;margin-bottom:8px;}
+.pdf-status{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted);line-height:1.7;min-height:20px;}
+.pdf-status.ok{color:var(--ok);}
+.pdf-status.err{color:var(--err);}
+.pdf-ord-list{margin-top:10px;display:flex;flex-direction:column;gap:6px;}
+.pdf-ord-item{background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'IBM Plex Mono',monospace;font-size:.72rem;}
+.pdf-ord-num{color:var(--acc);font-weight:700;margin-bottom:2px;}
+.pdf-ord-info{color:var(--muted);font-size:.65rem;}
+.pdf-ord-info.ok{color:var(--ok);}
+.pdf-ord-info.warn{color:var(--warn);}
 
 /* ══ PAGE: REPORT ══ */
 #page-report{background:var(--bg);}
@@ -429,17 +419,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .rstat-num.err{color:var(--err);}
 .rstat-num.pause{color:var(--pause);}
 .rstat-lbl{font-family:'IBM Plex Mono',monospace;font-size:.55rem;color:var(--muted);margin-top:3px;}
-.btn-report{
-  width:100%;padding:15px;background:var(--acc);color:#000;border:none;
-  border-radius:12px;font-family:'IBM Plex Mono',monospace;font-size:.88rem;
-  font-weight:700;cursor:pointer;letter-spacing:.05em;margin-bottom:10px;
-}
+.btn-report{width:100%;padding:15px;background:var(--acc);color:#000;border:none;border-radius:12px;font-family:'IBM Plex Mono',monospace;font-size:.88rem;font-weight:700;cursor:pointer;letter-spacing:.05em;margin-bottom:10px;}
 .btn-report:disabled{opacity:.4;cursor:not-allowed;}
-.btn-clrsave{
-  width:100%;padding:12px;background:none;color:var(--err);
-  border:1px solid rgba(255,74,74,.3);border-radius:10px;
-  font-family:'IBM Plex Mono',monospace;font-size:.78rem;cursor:pointer;
-}
+.btn-clrsave{width:100%;padding:12px;background:none;color:var(--err);border:1px solid rgba(255,74,74,.3);border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;cursor:pointer;}
 .report-info{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--muted);line-height:1.7;margin-top:8px;}
 
 /* PC layout override */
@@ -456,6 +438,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   #page-pausa .pausa-inner{max-width:520px;margin:0 auto;}
   #page-log .log-inner{max-width:520px;margin:0 auto;}
   #page-report .report-inner{max-width:520px;margin:0 auto;}
+  #page-pdf .pdf-inner{max-width:520px;margin:0 auto;}
 }
 </style>
 </head>
@@ -601,6 +584,18 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
+<!-- ── PDF PAGE ── -->
+<div class="page" id="page-pdf">
+  <div class="pdf-inner">
+    <div class="pdf-section">
+      <div class="pdf-title">📄 Piano di carico PDF</div>
+      <button class="btn-pdf-load" onclick="document.getElementById('pdfInput').click()">📄 CARICA PIANO DI CARICO</button>
+      <div class="pdf-status" id="pdfStatus">Nessun piano caricato — carica il PDF per vedere le descrizioni dei colli</div>
+      <div class="pdf-ord-list" id="pdfOrdList"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ── REPORT PAGE ── -->
 <div class="page" id="page-report">
   <div class="report-inner">
@@ -639,10 +634,30 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   <button class="nav-btn" id="nav-carica" onclick="document.getElementById('fileInput').click()">
     <div class="nav-icon">⬆️</div>CARICA
   </button>
+  <button class="nav-btn" id="nav-pdf" onclick="goPage('pdf')">
+    <div class="nav-icon">📄</div>PDF
+  </button>
   <button class="nav-btn" id="nav-report" onclick="goPage('report')">
     <div class="nav-icon">📊</div>REPORT
   </button>
 </nav>
+
+<!-- Modal -->
+<div id="modal">
+  <div class="modal-sheet">
+    <div class="modal-drag"></div>
+    <div class="modal-icon">⚠️</div>
+    <div class="modal-title">COLLO FUORI SESSIONE</div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-btns">
+      <button class="btn-mno"  onclick="modalAnswer(false)">✕ ANNULLA</button>
+      <button class="btn-myes" onclick="modalAnswer(true)">✓ Registra comunque</button>
+    </div>
+  </div>
+</div>
+
+
+<input type="file" id="pdfInput" accept=".pdf" style="display:none">
 
 <!-- Modal Spunta/De-spunta -->
 <div id="modalSpunta">
@@ -658,7 +673,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- Modal Riconosci -->
+<!-- Modal Riconosci Pacco -->
 <div id="modalRic">
   <div class="ric-sheet">
     <div class="ric-drag"></div>
@@ -674,7 +689,23 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal Collo Info (PDF) -->
+<div id="modalCollo">
+  <div class="collo-sheet">
+    <div class="collo-drag"></div>
+    <div class="collo-ord" id="colloOrd"></div>
+    <div class="collo-idx" id="colloIdx"></div>
+    <div class="collo-nome" id="colloNome"></div>
+    <div class="collo-dim" id="colloDim"></div>
+    <div class="collo-attrs" id="colloAttrs"></div>
+    <div class="collo-btns" id="colloBtns">
+      <button class="btn-collo-close" onclick="closeColloModal()">✕ Chiudi</button>
+      <button class="btn-collo-spunta" id="btnColloAction" onclick="colloModalAction()">✓ Spunta</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Sessione Fuori -->
 <div id="modal">
   <div class="modal-sheet">
     <div class="modal-drag"></div>
@@ -693,29 +724,33 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://unpkg.com/@zxing/library@0.19.1/umd/index.min.js"></script>
 <script>
-// ── AUDIO ─────────────────────────────────────────────
+
+// ── AUDIO default ON ──────────────────────────────────
 let audioCtx=null, audioOn=true;
 function getCtx(){
-  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-  if(audioCtx.state==='suspended') audioCtx.resume();
+  if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==='suspended')audioCtx.resume();
   return audioCtx;
 }
 function playBeep(type){
-  if(!audioOn&&type!=='alarm') return;
+  if(!audioOn&&type!=='alarm')return;
   try{
     const ctx=getCtx();
     const comp=ctx.createDynamicsCompressor();
     comp.threshold.value=-3;comp.ratio.value=6;comp.attack.value=0;comp.release.value=.1;
     comp.connect(ctx.destination);
     const c={
-      ok:      [{f:880,d:.12,v:1},{f:1200,d:.18,v:1}],
-      error:   [{f:220,d:.25,v:1},{f:160,d:.3,v:1},{f:120,d:.2,v:1}],
-      dup:     [{f:440,d:.18,v:1},{f:330,d:.22,v:1}],
+      ok:[{f:880,d:.12,v:1},{f:1200,d:.18,v:1}],
+      error:[{f:220,d:.25,v:1},{f:160,d:.3,v:1},{f:120,d:.2,v:1}],
+      dup:[{f:440,d:.18,v:1},{f:330,d:.22,v:1}],
       complete:[{f:660,d:.12,v:1},{f:880,d:.12,v:1},{f:1100,d:.12,v:1},{f:1320,d:.2,v:1}],
-      pause:   [{f:600,d:.18,v:1},{f:400,d:.25,v:1}],
-      alarm:   [{f:1200,d:.18,v:1},{f:300,d:.18,v:1},{f:1200,d:.18,v:1},{f:300,d:.18,v:1},{f:1200,d:.25,v:1}]
+      pause:[{f:600,d:.18,v:1},{f:400,d:.25,v:1}],
+      alarm:[{f:1200,d:.18,v:1},{f:300,d:.18,v:1},{f:1200,d:.18,v:1},{f:300,d:.18,v:1},{f:1200,d:.25,v:1}]
     };
     let t=ctx.currentTime;
     (c[type]||c.ok).forEach(n=>{
@@ -744,16 +779,19 @@ const S={clients:{},paused:{},filter:'all'};
 const SESS={active:false,client:null,order:null};
 let pendingScan=null;
 
-// ── NAVIGATION ────────────────────────────────────────
+// ── NAVIGATION ───────────────────────────────────────
 function goPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
-  document.getElementById('nav-'+name).classList.add('active');
-  if(name!=='scan') stopCamera();
+  const pg=document.getElementById('page-'+name);
+  const nb=document.getElementById('nav-'+name);
+  if(pg)pg.classList.add('active');
+  if(nb)nb.classList.add('active');
+  if(name!=='scan')stopCamera();
   if(name==='scan'&&document.getElementById('imode-scanner').classList.contains('active'))
     setTimeout(()=>document.getElementById('scanInput').focus(),100);
   if(name==='report'){updateReportStats();updateSaveInfo();}
+  if(name==='pdf'){renderPdfPage();}
 }
 
 // ── FILE LOAD ─────────────────────────────────────────
@@ -770,20 +808,17 @@ function loadFile(file){
         const row=rows[i];
         const cl=(row[0]||'').toString().trim(),or=(row[1]||'').toString().trim();
         const co=parseInt(row[2])||0,de=(row[4]||'').toString().trim();
-        if(!cl||!or||!co||cl.toUpperCase().includes('TOTALI')) continue;
-        if(!S.clients[cl]) S.clients[cl]={orders:{}};
-        if(!S.clients[cl].orders[or]) S.clients[cl].orders[or]={total:co,scanned:new Set(),desc:de};
+        if(!cl||!or||!co||cl.toUpperCase().includes('TOTALI'))continue;
+        if(!S.clients[cl])S.clients[cl]={orders:{}};
+        if(!S.clients[cl].orders[or])S.clients[cl].orders[or]={total:co,scanned:new Set(),desc:de};
         else S.clients[cl].orders[or].total+=co;
       }
       const nc=Object.keys(S.clients).length;
       document.getElementById('topSub').textContent=`${nc} clienti · ${totOrders()} ordini · ${totColli()} colli`;
       document.getElementById('logList').innerHTML='';
-      renderAll();
-      populateSelects();
-      updateSessionUI();
+      renderAll();populateSelects();updateSessionUI();
       showToast(`✅ Lista caricata: ${nc} clienti`,'ok');
-      playBeep('ok');
-      saveState();
+      playBeep('ok');saveState();
     }catch(err){showToast('❌ Errore: '+err.message,'err');}
   };
   r.readAsArrayBuffer(file);
@@ -803,21 +838,18 @@ function populateSelects(){
   });
   so.innerHTML='<option value="">— Seleziona ordine —</option>';
   so.disabled=true;
-  if(prev&&S.clients[prev]) fillOrderSelect(prev);
+  if(prev&&S.clients[prev])fillOrderSelect(prev);
 }
-function onClientChange(){
-  fillOrderSelect(document.getElementById('selClient').value);
-}
+function onClientChange(){fillOrderSelect(document.getElementById('selClient').value);}
 function fillOrderSelect(cn){
   const so=document.getElementById('selOrder');
   so.innerHTML='<option value="">— Seleziona ordine —</option>';
   so.disabled=!cn;
-  if(!cn||!S.clients[cn]) return;
+  if(!cn||!S.clients[cn])return;
   Object.entries(S.clients[cn].orders).forEach(([on,od])=>{
     const sc=od.scanned.size,tot=od.total,done=sc===tot;
     const o=document.createElement('option');
-    o.value=on;
-    o.textContent=`${on}  (${sc}/${tot}${done?' ✓':''})`;
+    o.value=on;o.textContent=`${on}  (${sc}/${tot}${done?' ✓':''})`;
     so.appendChild(o);
   });
   so.disabled=false;
@@ -828,21 +860,13 @@ function startSession(){
   if(!cn){showToast('Seleziona un cliente','err');return;}
   if(!on){showToast('Seleziona un ordine','err');return;}
   SESS.active=true;SESS.client=cn;SESS.order=on;
-  updateSessionUI();
-  showToast('✅ Sessione avviata: '+on,'ok');
-  playBeep('ok');
-  saveState();
+  updateSessionUI();showToast('✅ Sessione avviata: '+on,'ok');playBeep('ok');saveState();
 }
 function endSession(){
   SESS.active=false;SESS.client=null;SESS.order=null;
-  updateSessionUI();
-  showToast('Sessione terminata','paused');
-  saveState();
+  updateSessionUI();showToast('Sessione terminata','paused');saveState();
 }
-function pauseCurrentSession(){
-  if(!SESS.active) return;
-  pauseOrder(SESS.order, SESS.client);
-}
+function pauseCurrentSession(){if(!SESS.active)return;pauseOrder(SESS.order,SESS.client);}
 function updateSessionUI(){
   const bar=document.getElementById('sessBar');
   const setup=document.getElementById('sessSetup');
@@ -861,9 +885,8 @@ function updateSessionUI(){
   }
 }
 function refreshSessProg(){
-  if(!SESS.active) return;
-  const ord=S.clients[SESS.client]?.orders[SESS.order];
-  if(!ord) return;
+  if(!SESS.active)return;
+  const ord=S.clients[SESS.client]?.orders[SESS.order];if(!ord)return;
   const sc=ord.scanned.size,tot=ord.total,rem=tot-sc;
   const pct=tot>0?Math.round(sc/tot*100):0;
   document.getElementById('sbProg').textContent=
@@ -871,29 +894,29 @@ function refreshSessProg(){
   document.getElementById('sbProgFill').style.width=pct+'%';
 }
 function checkSession(orderNum,clientName){
-  if(!SESS.active) return 'ok';
-  if(clientName!==SESS.client) return 'wrong-client';
-  if(orderNum!==SESS.order) return 'wrong-order';
+  if(!SESS.active)return 'ok';
+  if(clientName!==SESS.client)return 'wrong-client';
+  if(orderNum!==SESS.order)return 'wrong-order';
   return 'ok';
 }
 
-// ── TABS ──────────────────────────────────────────────
+// ── TABS ─────────────────────────────────────────────
 function switchTab(t){
   ['scanner','manual','cam'].forEach(x=>{
     document.getElementById('itab-'+x).classList.toggle('active',x===t);
     document.getElementById('imode-'+x).classList.toggle('active',x===t);
   });
-  if(t!=='cam') stopCamera();
-  if(t==='scanner') setTimeout(()=>document.getElementById('scanInput').focus(),50);
-  else if(t==='manual') setTimeout(()=>document.getElementById('manOrder').focus(),50);
+  if(t!=='cam')stopCamera();
+  if(t==='scanner')setTimeout(()=>document.getElementById('scanInput').focus(),50);
+  else if(t==='manual')setTimeout(()=>document.getElementById('manOrder').focus(),50);
 }
 
-// ── SCANNER INPUT ─────────────────────────────────────
+// ── SCANNER INPUT ────────────────────────────────────
 document.getElementById('scanInput').addEventListener('keydown',function(e){
   if(e.key==='Enter'){const v=this.value.trim();if(v)processScan(v,'scanner');this.value='';}
 });
 
-// ── MANUAL INPUT ──────────────────────────────────────
+// ── MANUAL INPUT ─────────────────────────────────────
 function submitManual(){
   const o=document.getElementById('manOrder').value.trim();
   const i=document.getElementById('manIdx').value.trim();
@@ -908,124 +931,7 @@ document.getElementById('manTot').addEventListener('keydown',e=>{if(e.key==='Ent
 document.getElementById('manIdx').addEventListener('keydown',e=>{if(e.key==='Enter')submitManual();});
 document.getElementById('manOrder').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('manIdx').focus();});
 
-// ── CAMERA ────────────────────────────────────────────
-let codeReader=null,camStream=null,facingMode='environment',camCooldown=false;
-let allDevices=[],deviceIndex=0,cooldownTimer=null,cooldownInterval=null;
-const COOLDOWN_MS=2000;
-
-async function startCamera(){
-  const sbar=document.getElementById('camSbar');
-  const btnStart=document.getElementById('btnCamStart');
-  const btnStop=document.getElementById('btnCamStop');
-  const btnFlip=document.getElementById('btnCamFlip');
-  const video=document.getElementById('camVideo');
-  sbar.textContent='Avvio fotocamera...';sbar.className='cam-sbar s';
-  btnStart.style.display='none';
-  try{
-    if(typeof ZXing==='undefined'){sbar.textContent='Libreria non caricata.';sbar.className='cam-sbar e';btnStart.style.display='block';return;}
-    stopCamera(true);
-    const hints=new Map();
-    const fmts=[ZXing.BarcodeFormat.QR_CODE,ZXing.BarcodeFormat.CODE_128,ZXing.BarcodeFormat.CODE_39,ZXing.BarcodeFormat.EAN_13,ZXing.BarcodeFormat.EAN_8,ZXing.BarcodeFormat.DATA_MATRIX,ZXing.BarcodeFormat.PDF_417,ZXing.BarcodeFormat.ITF,ZXing.BarcodeFormat.AZTEC];
-    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,fmts);
-    hints.set(ZXing.DecodeHintType.TRY_HARDER,true);
-    codeReader=new ZXing.BrowserMultiFormatReader(hints,200);
-
-    let permStream=null;
-    try{permStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:facingMode}}});permStream.getTracks().forEach(t=>t.stop());}
-    catch(pe){if(pe.name==='NotAllowedError'||pe.name==='PermissionDeniedError'){sbar.textContent='⛔ Permesso negato. Vai in Impostazioni → Browser → Fotocamera → Consenti.';sbar.className='cam-sbar e';btnStart.style.display='block';return;}}
-
-    let devices=[];
-    try{devices=await ZXing.BrowserMultiFormatReader.listVideoInputDevices();}catch(e){}
-    allDevices=devices;
-    let deviceId=undefined;
-    if(devices.length>0){
-      if(facingMode==='environment'){
-        const back=devices.find(d=>{const l=d.label.toLowerCase();return(l.includes('back')||l.includes('rear'))&&!l.includes('wide')&&!l.includes('ultra')&&!l.includes('tele')&&!l.includes('macro');})||devices.find(d=>{const l=d.label.toLowerCase();return l.includes('back')||l.includes('rear')||l.includes('environment');});
-        if(back)deviceId=back.deviceId;
-        if(!deviceId)deviceId=devices[0].deviceId;
-      } else {
-        const front=devices.find(d=>{const l=d.label.toLowerCase();return l.includes('front')||l.includes('user')||l.includes('selfie');});
-        if(front)deviceId=front.deviceId;
-        if(!deviceId&&devices.length>1)deviceId=devices[devices.length-1].deviceId;
-      }
-      if(devices.length>1){btnFlip.style.display='block';deviceIndex=devices.findIndex(d=>d.deviceId===deviceId);if(deviceIndex<0)deviceIndex=0;}
-    }
-    btnStop.style.display='block';
-    document.getElementById('camLine').style.animationPlayState='running';
-    sbar.textContent='🔍 Inquadra il codice sull\'etichetta...';sbar.className='cam-sbar s';
-    if(deviceId){
-      await codeReader.decodeFromVideoDevice(deviceId,video,(res,err)=>{if(res&&!camCooldown){handleCamScan(res.getText());startCooldown();}});
-    } else {
-      await codeReader.decodeFromConstraints({video:{facingMode:{ideal:facingMode},width:{ideal:1920},height:{ideal:1080}}},video,(res,err)=>{if(res&&!camCooldown){handleCamScan(res.getText());startCooldown();}});
-    }
-    camStream=video.srcObject;
-  }catch(err){
-    let msg='📷 Errore fotocamera';
-    if(err.name==='NotAllowedError')msg='⛔ Permesso negato.';
-    else if(err.name==='NotFoundError')msg='📷 Nessuna fotocamera trovata.';
-    else if(err.name==='NotReadableError')msg='📷 Fotocamera occupata da altra app.';
-    else msg=`📷 ${err.name}`;
-    sbar.textContent=msg;sbar.className='cam-sbar e';
-    btnStart.style.display='block';btnStop.style.display='none';btnFlip.style.display='none';
-  }
-}
-function stopCamera(silent=false){
-  if(codeReader){try{codeReader.reset();}catch(e){}codeReader=null;}
-  if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
-  const video=document.getElementById('camVideo');
-  if(video.srcObject){try{video.srcObject.getTracks().forEach(t=>t.stop());}catch(e){}video.srcObject=null;}
-  if(!silent){
-    document.getElementById('btnCamStart').style.display='block';
-    document.getElementById('btnCamStop').style.display='none';
-    document.getElementById('btnCamFlip').style.display='none';
-    document.getElementById('camSbar').textContent='Fotocamera spenta.';
-    document.getElementById('camSbar').className='cam-sbar s';
-    document.getElementById('camLine').style.animationPlayState='paused';
-  }
-  camCooldown=false;clearTimeout(cooldownTimer);clearInterval(cooldownInterval);
-}
-async function flipCamera(){
-  if(allDevices.length>1){
-    deviceIndex=(deviceIndex+1)%allDevices.length;
-    const nd=allDevices[deviceIndex];
-    document.getElementById('camSbar').textContent='Cambio fotocamera...';
-    stopCamera(true);await new Promise(r=>setTimeout(r,300));
-    const hints=new Map();
-    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,[ZXing.BarcodeFormat.QR_CODE,ZXing.BarcodeFormat.CODE_128,ZXing.BarcodeFormat.CODE_39,ZXing.BarcodeFormat.EAN_13,ZXing.BarcodeFormat.EAN_8,ZXing.BarcodeFormat.DATA_MATRIX,ZXing.BarcodeFormat.PDF_417,ZXing.BarcodeFormat.ITF]);
-    hints.set(ZXing.DecodeHintType.TRY_HARDER,true);
-    codeReader=new ZXing.BrowserMultiFormatReader(hints,200);
-    const video=document.getElementById('camVideo');
-    document.getElementById('btnCamStop').style.display='block';
-    document.getElementById('btnCamFlip').style.display='block';
-    document.getElementById('camLine').style.animationPlayState='running';
-    try{
-      await codeReader.decodeFromVideoDevice(nd.deviceId,video,(res,err)=>{if(res&&!camCooldown){handleCamScan(res.getText());startCooldown();}});
-      camStream=video.srcObject;
-      document.getElementById('camSbar').textContent='🔍 Inquadra il codice...';
-      document.getElementById('camSbar').className='cam-sbar s';
-    }catch(e){document.getElementById('camSbar').textContent='Errore: '+e.message;document.getElementById('camSbar').className='cam-sbar e';}
-  } else {facingMode=(facingMode==='environment')?'user':'environment';stopCamera(true);await startCamera();}
-}
-function handleCamScan(raw){
-  const sbar=document.getElementById('camSbar');
-  const flash=document.getElementById('camFlash');
-  sbar.textContent='📦 Letto: '+raw;
-  flash.className='cam-flash';void flash.offsetWidth;
-  const ok=processScan(raw,'cam');
-  flash.classList.add(ok!==false?'ok':'err');
-  sbar.className=ok!==false?'cam-sbar f':'cam-sbar e';
-  setTimeout(()=>{flash.className='cam-flash';},500);
-}
-function startCooldown(){
-  camCooldown=true;
-  const bar=document.getElementById('camCd');
-  let pct=100;bar.style.width='100%';
-  clearInterval(cooldownInterval);
-  cooldownInterval=setInterval(()=>{pct-=(100/(COOLDOWN_MS/50));bar.style.width=Math.max(0,pct)+'%';if(pct<=0){clearInterval(cooldownInterval);bar.style.width='0%';camCooldown=false;}},50);
-  clearTimeout(cooldownTimer);cooldownTimer=setTimeout(()=>{camCooldown=false;},COOLDOWN_MS);
-}
-
-// ── BARCODE PARSER ────────────────────────────────────
+// ── BARCODE PARSER ───────────────────────────────────
 function parseBarcode(raw){
   raw=raw.trim();
   let orderNum=null,cIdx=null,cTot=null;
@@ -1037,19 +943,10 @@ function parseBarcode(raw){
   else if(m2){orderNum=m2[1];cIdx=+m2[2];}
   else if(m3){orderNum=m3[1];}
   else if(m4){
-    // Format: [orderNum][XX]-[collo] where XX is zero-padded collo or separator
-    // Always trust the number after '-' as collo index
-    // e.g. 72708201-1 → order=727082, collo=1
-    // e.g. 71830616-16 → order=718306, collo=16
-    const afterDash=+m4[3], suffix=+m4[2];
-    const suffixNoPad=String(suffix).replace(/^0+/,'') || '0';
-    if(suffixNoPad===String(afterDash) || suffix===afterDash){
-      // suffix is zero-padded collo: order is m4[1]
-      orderNum=m4[1]; cIdx=afterDash;
-    } else {
-      // suffix is part of order number
-      orderNum=m4[1]+m4[2]; cIdx=afterDash;
-    }
+    const afterDash=+m4[3],suffix=+m4[2];
+    const suffixNoPad=String(suffix).replace(/^0+/,'')||'0';
+    if(suffixNoPad===String(afterDash)||suffix===afterDash){orderNum=m4[1];cIdx=afterDash;}
+    else{orderNum=m4[1]+m4[2];cIdx=afterDash;}
   } else {
     const p=raw.split(/[\s_\-|,;']+/);
     if(p.length>=2){orderNum=p[0].replace(/\D/g,'');const q=p[1].split('/');cIdx=+q[0];if(q[1])cTot=+q[1];}
@@ -1058,29 +955,28 @@ function parseBarcode(raw){
 }
 function resolveOrder(raw){
   for(const[cn,cd] of Object.entries(S.clients))
-    if(cd.orders[raw]) return{client:cn,order:cd.orders[raw],orderNum:raw};
+    if(cd.orders[raw])return{client:cn,order:cd.orders[raw],orderNum:raw};
   for(let trim=1;trim<=2;trim++){
-    const s=raw.slice(0,-trim);if(s.length<4) break;
+    const s=raw.slice(0,-trim);if(s.length<4)break;
     for(const[cn,cd] of Object.entries(S.clients))
-      if(cd.orders[s]) return{client:cn,order:cd.orders[s],orderNum:s};
+      if(cd.orders[s])return{client:cn,order:cd.orders[s],orderNum:s};
   }
   return null;
 }
 
-// ── MODAL ─────────────────────────────────────────────
+// ── MODAL SESSIONE ────────────────────────────────────
 function showModal(raw,source,orderNum,clientName,check){
   pendingScan={raw,source};
   let reason='';
-  if(check==='wrong-client') reason=`Il collo appartiene a <span class="mb">${clientName}</span><br>ma la sessione è per <span class="mb">${SESS.client}</span>.`;
+  if(check==='wrong-client')reason=`Il collo appartiene a <span class="mb">${clientName}</span><br>ma la sessione è per <span class="mb">${SESS.client}</span>.`;
   else reason=`Il collo è dell'ordine <span class="mb">${orderNum}</span><br>ma la sessione è per l'ordine <span class="mb">${SESS.order}</span>.`;
   document.getElementById('modalBody').innerHTML=reason+'<br><br>Vuoi registrarlo comunque?';
   document.getElementById('modal').classList.add('show');
-  playBeep('alarm');
-  flashScreen('rgba(255,74,74,.2)');
+  playBeep('alarm');flashScreen('rgba(255,74,74,.2)');
 }
 function modalAnswer(proceed){
   document.getElementById('modal').classList.remove('show');
-  if(proceed&&pendingScan) processScan(pendingScan.raw,pendingScan.source,true);
+  if(proceed&&pendingScan)processScan(pendingScan.raw,pendingScan.source,true);
   pendingScan=null;
 }
 
@@ -1097,15 +993,12 @@ function processScan(raw,source='scanner',bypass=false){
   const resolved=resolveOrder(orderNum);
   let fClient=resolved?.client||null,fOrder=resolved?.order||null;
   const resolvedNum=resolved?.orderNum||null;
-  // Se resolveOrder ha usato il fallback (ha tolto cifre), avvisa sempre
-  if(resolved&&resolvedNum!==orderNum){
-    showToast(`⚠️ Ordine ${orderNum} → trovato come ${resolvedNum} (${fClient})`,'err');
-  }
-  if(resolved) orderNum=resolved.orderNum;
+  if(resolved&&resolvedNum!==orderNum)showToast(`⚠️ ${orderNum} → trovato come ${resolvedNum} (${fClient})`,'err');
+  if(resolved)orderNum=resolved.orderNum;
   if(!fOrder){
     const sim=findSim(orderNum);
     flashErr();playBeep('error');flashScreen('rgba(255,74,74,.15)');
-    if(sim) showToast(`⚠️ Simile: ${sim.ord} (${sim.cl})`,'err');
+    if(sim)showToast(`⚠️ Simile: ${sim.ord} (${sim.cl})`,'err');
     setStatus(`❌ Ordine ${orderNum} non trovato${sim?' — Simile: '+sim.ord:''}`, 'err');
     addLog(`Ordine ${orderNum} sconosciuto`,'err');
     return false;
@@ -1131,33 +1024,27 @@ function processScan(raw,source='scanner',bypass=false){
     addLog(`Ordine ${orderNum}: collo ${cIdx} duplicato`,'dup');
     return false;
   }
-  // ✅ SUCCESS
-  fOrder.scanned.add(cIdx);
-  flashOk();
+  fOrder.scanned.add(cIdx);flashOk();
   if(isPaused){
     S.paused[orderNum].missing=S.paused[orderNum].missing.filter(x=>x!==cIdx);
     if(!S.paused[orderNum].missing.length){delete S.paused[orderNum];showToast(`✅ Ordine pausa ${orderNum} completato!`,'complete');playBeep('complete');}
     else playBeep('ok');
   } else playBeep('ok');
   const rem=fOrder.total-fOrder.scanned.size;
-  // Mostra cliente nel status quando fuori sessione o cliente diverso
   const clientTag=(!SESS.active||fClient!==SESS.client)?` [${fClient}]`:'';
   if(rem===0){
     setStatus(`✅ Ordine ${orderNum} COMPLETATO! Tutti i ${fOrder.total} colli.${clientTag}`,'ok');
     if(!isPaused){showToast(`🎉 Ordine ${orderNum} completato!`,'complete');playBeep('complete');}
     addLog(`Ordine ${orderNum}: COMPLETATO ✓`,'ok');
   } else {
-    const missList=[];
-    for(let i=1;i<=fOrder.total;i++) if(!fOrder.scanned.has(i)) missList.push(i);
+    const missList=[];for(let i=1;i<=fOrder.total;i++)if(!fOrder.scanned.has(i))missList.push(i);
     const missStr=missList.length<=15?missList.join(', '):missList.slice(0,15).join(', ')+'…';
     setStatus(`✅ Collo ${cIdx}/${fOrder.total} — mancano ${rem}: [${missStr}]${clientTag}`,'ok');
     addLog(`${orderNum}: collo ${cIdx}/${fOrder.total} ✓`,'ok');
   }
-  if(clientDone(fClient)) showToast(`🏆 Cliente "${fClient}" completato!`,'complete');
-  renderAll();
-  highlightCollo(orderNum,cIdx);
-  saveState();
-  if(source==='scanner') setTimeout(()=>document.getElementById('scanInput').focus(),50);
+  if(clientDone(fClient))showToast(`🏆 Cliente "${fClient}" completato!`,'complete');
+  renderAll();highlightCollo(orderNum,cIdx);saveState();
+  if(source==='scanner')setTimeout(()=>document.getElementById('scanInput').focus(),50);
   return true;
 }
 
@@ -1167,21 +1054,16 @@ function pauseOrder(ord,cl){
   const miss=[];for(let i=1;i<=o.total;i++)if(!o.scanned.has(i))miss.push(i);
   if(!miss.length){showToast('Ordine già completo','err');return;}
   S.paused[ord]={clientName:cl,missing:[...miss]};
-  playBeep('pause');
-  addLog(`Ordine ${ord} in PAUSA — ${miss.length} colli mancanti`,'psd');
-  showToast(`⏸ Ordine ${ord} in pausa`,'paused');
-  renderAll();
-  saveState();
+  playBeep('pause');addLog(`Ordine ${ord} in PAUSA — ${miss.length} colli mancanti`,'psd');
+  showToast(`⏸ Ordine ${ord} in pausa`,'paused');renderAll();saveState();
 }
 function resumeOrder(ord){
   delete S.paused[ord];
-  addLog(`Ordine ${ord}: pausa rimossa`,'ok');
-  showToast(`▶ Ordine ${ord} ripreso`,'ok');
-  renderAll();
-  saveState();
+  addLog(`Ordine ${ord}: pausa rimossa`,'ok');showToast(`▶ Ordine ${ord} ripreso`,'ok');
+  renderAll();saveState();
 }
 
-// ── SIMILARITY ───────────────────────────────────────
+// ── SIMILARITY ────────────────────────────────────────
 function findSim(q){
   let best=null,bs=0;
   for(const[cn,cd] of Object.entries(S.clients))
@@ -1214,7 +1096,7 @@ function renderOrdini(){
   }
   const td=doneOrders(),to=totOrders();
   let html='';
-  if(td===to&&to>0) html+=`<div class="complete-banner">🏆 CARICO COMPLETATO — tutti i ${to} ordini!</div>`;
+  if(td===to&&to>0)html+=`<div class="complete-banner">🏆 CARICO COMPLETATO — tutti i ${to} ordini!</div>`;
   html+=`<div class="filter-row">
     <button class="fbtn ${S.filter==='all'?'active':''}" onclick="setFilter('all')">Tutti</button>
     <button class="fbtn ${S.filter==='pending'?'active':''}" onclick="setFilter('pending')">Da completare</button>
@@ -1259,7 +1141,8 @@ function renderOrdini(){
         <div class="colli-grid">`;
       for(let i=1;i<=tot;i++){
         const cls=od.scanned.has(i)?'done':(ip&&miss.includes(i))?'miss':'';
-        html+=`<div class="collo ${cls}" id="collo-${on}-${i}" onclick="clickCollo('${on}','${escH(cn)}',${i})">${i}</div>`;
+        const hasInfo=!!(P[on]&&P[on][i]);
+        html+=`<div class="collo ${cls}${hasInfo?' has-info':''}" id="collo-${on}-${i}" onclick="colloTap('${on}','${escH(cn)}',${i})">${i}</div>`;
       }
       html+=`</div></div>`;
     }
@@ -1267,91 +1150,6 @@ function renderOrdini(){
   }
   inner.innerHTML=html;
 }
-// ── SPUNTA MANUALE (click collo + campo rapido) ────────
-let _spuntaPending=null;
-
-function clickCollo(ord,cl,idx){
-  const o=S.clients[cl]?.orders[ord];if(!o)return;
-  const alreadyDone=o.scanned.has(idx);
-  _spuntaPending={ord,cl,idx,remove:alreadyDone};
-  document.getElementById('spuntaIcon').textContent=alreadyDone?'↩️':'✅';
-  const titleEl=document.getElementById('spuntaTitle');
-  titleEl.textContent=alreadyDone?`DE-SPUNTA COLLO ${idx}`:`SPUNTA COLLO ${idx}`;
-  titleEl.className='spunta-title '+(alreadyDone?'remove':'add');
-  document.getElementById('spuntaBody').innerHTML=
-    `Ordine <b>${ord}</b> — ${escH(cl)}<br>${alreadyDone?'Rimuovere la scansione del collo <b>'+idx+'</b>?':'Registrare il collo <b>'+idx+'/'+o.total+'</b> come scansionato?'}`;
-  const btnSi=document.getElementById('btnSpuntaSi');
-  btnSi.className=alreadyDone?'btn-spunta-si-rem':'btn-spunta-si-add';
-  btnSi.textContent=alreadyDone?'↩ Rimuovi':'✓ Spunta';
-  document.getElementById('modalSpunta').classList.add('show');
-}
-
-function quickSpunta(ord,cl,val){
-  const idx=parseInt(val);
-  const o=S.clients[cl]?.orders[ord];
-  if(!o||isNaN(idx)||idx<1||idx>o.total){
-    showToast(`❌ Collo non valido (1–${o?.total||'?'})`, 'err');playBeep('error');return;
-  }
-  clickCollo(ord,cl,idx);
-}
-function quickSpuntaBtn(ord,cl,input){
-  quickSpunta(ord,cl,input.value);
-  input.value='';
-}
-
-function closeSpunta(){
-  document.getElementById('modalSpunta').classList.remove('show');
-  _spuntaPending=null;
-}
-
-function confirmSpunta(){
-  if(!_spuntaPending){closeSpunta();return;}
-  const {ord,cl,idx,remove}=_spuntaPending;
-  closeSpunta();
-  const o=S.clients[cl]?.orders[ord];if(!o)return;
-
-  if(remove){
-    // De-spunta
-    if(!o.scanned.has(idx)){showToast('Collo non presente','err');return;}
-    o.scanned.delete(idx);
-    // se era in pausa, riaggiungi ai missing
-    if(S.paused[ord]&&!S.paused[ord].missing.includes(idx)){
-      S.paused[ord].missing.push(idx);
-      S.paused[ord].missing.sort((a,b)=>a-b);
-    }
-    addLog(`${ord}: collo ${idx} DE-SPUNTATO (manuale)`,'dup');
-    showToast(`↩ Collo ${idx} rimosso dall'ordine ${ord}`,'err');
-    playBeep('dup');
-  } else {
-    // Spunta
-    if(o.scanned.has(idx)){showToast(`⚠️ Collo ${idx} già scansionato!`,'err');playBeep('dup');return;}
-    o.scanned.add(idx);
-    // aggiorna pausa se necessario
-    if(S.paused[ord]){
-      S.paused[ord].missing=S.paused[ord].missing.filter(x=>x!==idx);
-      if(!S.paused[ord].missing.length){delete S.paused[ord];showToast(`✅ Ordine ${ord} in pausa completato!`,'complete');playBeep('complete');}
-    }
-    const rem=o.total-o.scanned.size;
-    if(rem===0){
-      showToast(`🎉 Ordine ${ord} COMPLETATO!`,'complete');playBeep('complete');
-      addLog(`${ord}: COMPLETATO ✓ (manuale)`,'ok');
-    } else {
-      showToast(`✅ Collo ${idx}/${o.total} spuntato (${ord})`,'ok');playBeep('ok');
-      addLog(`${ord}: collo ${idx}/${o.total} ✓ (manuale)`,'ok');
-    }
-    if(clientDone(cl)) showToast(`🏆 Cliente "${cl}" completato!`,'complete');
-  }
-  renderAll();
-  saveState();
-}
-
-// chiudi cliccando fuori
-document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('modalSpunta').addEventListener('click',function(e){
-    if(e.target===this) closeSpunta();
-  });
-});
-
 function renderPausa(){
   const inner=document.getElementById('pausaInner');
   const entries=Object.entries(S.paused);
@@ -1377,7 +1175,7 @@ function highlightCollo(ord,idx){
   if(el){el.classList.add('hi');setTimeout(()=>el.classList.remove('hi'),700);el.scrollIntoView({behavior:'smooth',block:'nearest'});}
 }
 
-// ── LOG ───────────────────────────────────────────────
+// ── LOG ──────────────────────────────────────────────
 function addLog(msg,type){
   const now=new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   const empty=document.querySelector('#logList .log-empty');
@@ -1406,45 +1204,119 @@ function showToast(msg,type){
 
 // ── MATH HELPERS ─────────────────────────────────────
 function totOrders(){return Object.values(S.clients).reduce((a,c)=>a+Object.keys(c.orders).length,0);}
-function totColli() {return Object.values(S.clients).reduce((a,c)=>a+Object.values(c.orders).reduce((b,o)=>b+o.total,0),0);}
+function totColli(){return Object.values(S.clients).reduce((a,c)=>a+Object.values(c.orders).reduce((b,o)=>b+o.total,0),0);}
 function scanColli(){return Object.values(S.clients).reduce((a,c)=>a+Object.values(c.orders).reduce((b,o)=>b+o.scanned.size,0),0);}
 function doneOrders(){return Object.values(S.clients).reduce((a,c)=>a+Object.values(c.orders).filter(o=>o.scanned.size===o.total).length,0);}
 function clientDone(n){const c=S.clients[n];return c?Object.values(c.orders).every(o=>o.scanned.size===o.total):false;}
 function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function escId(s){return String(s).replace(/[^a-zA-Z0-9]/g,'_');}
 
+// ── COLLO TAP ─────────────────────────────────────────
+function colloTap(ord,cl,idx){
+  const o=S.clients[cl]?.orders[ord];if(!o)return;
+  if(P[ord]&&P[ord][idx]){showColloModal(ord,cl,idx);}
+  else{showSpuntaModal(ord,cl,idx);}
+}
+
+// ── MODAL COLLO INFO (PDF) ────────────────────────────
+function showColloModal(ord,cl,idx){
+  const info=P[ord]?.[idx]||'';
+  let nome=info,dim='',attrsHtml='';
+  if(info){
+    const attrStart=info.search(/\s+(?:Colore|Tipo|Verso|Presenza|Luce|Imballo|Rivestimento|CONTENUTO)/);
+    if(attrStart>-1){
+      nome=info.substring(0,attrStart).trim();
+      const rawAttrs=info.substring(attrStart).trim();
+      attrsHtml=rawAttrs.split(';').map(a=>a.trim()).filter(Boolean).map(a=>{
+        const eq=a.indexOf('=');return eq>-1?`<b>${escH(a.substring(0,eq))}:</b> ${escH(a.substring(eq+1))}`:escH(a);
+      }).join('<br>');
+    }
+    const dimParts=nome.match(/(?:P\.\d+|H\.\d+|L\.\d+|Ø\d+|sp\.\d+)/g);
+    if(dimParts)dim=dimParts.join('  ');
+  }
+  document.getElementById('colloOrd').textContent=`Ordine ${ord} — ${cl}`;
+  document.getElementById('colloIdx').textContent=`Collo ${idx}`;
+  document.getElementById('colloNome').textContent=nome||'—';
+  document.getElementById('colloDim').textContent=dim;
+  document.getElementById('colloAttrs').innerHTML=attrsHtml||'';
+  const o=S.clients[cl]?.orders[ord];
+  const alreadyDone=o?.scanned.has(idx);
+  const actionBtn=document.getElementById('btnColloAction');
+  actionBtn.textContent=alreadyDone?'↩ De-spunta':'✓ Spunta';
+  actionBtn.className=alreadyDone?'btn-collo-despunta':'btn-collo-spunta';
+  actionBtn.onclick=()=>{closeColloModal();showSpuntaModal(ord,cl,idx);};
+  document.getElementById('modalCollo').classList.add('show');
+}
+function closeColloModal(){document.getElementById('modalCollo').classList.remove('show');}
+
+// ── SPUNTA MANUALE ────────────────────────────────────
+let _spuntaPending=null;
+function showSpuntaModal(ord,cl,idx){
+  const o=S.clients[cl]?.orders[ord];if(!o)return;
+  const alreadyDone=o.scanned.has(idx);
+  _spuntaPending={ord,cl,idx,remove:alreadyDone};
+  document.getElementById('spuntaIcon').textContent=alreadyDone?'↩️':'✅';
+  const titleEl=document.getElementById('spuntaTitle');
+  titleEl.textContent=alreadyDone?`DE-SPUNTA COLLO ${idx}`:`SPUNTA COLLO ${idx}`;
+  titleEl.className='spunta-title '+(alreadyDone?'remove':'add');
+  document.getElementById('spuntaBody').innerHTML=
+    `Ordine <b>${ord}</b> — ${escH(cl)}<br>${alreadyDone?'Rimuovere la scansione del collo <b>'+idx+'</b>?':'Registrare il collo <b>'+idx+'/'+o.total+'</b> come scansionato?'}`;
+  const btnSi=document.getElementById('btnSpuntaSi');
+  btnSi.className=alreadyDone?'btn-spunta-si-rem':'btn-spunta-si-add';
+  btnSi.textContent=alreadyDone?'↩ Rimuovi':'✓ Spunta';
+  document.getElementById('modalSpunta').classList.add('show');
+}
+function closeSpunta(){document.getElementById('modalSpunta').classList.remove('show');_spuntaPending=null;}
+function confirmSpunta(){
+  if(!_spuntaPending){closeSpunta();return;}
+  const{ord,cl,idx,remove}=_spuntaPending;closeSpunta();
+  const o=S.clients[cl]?.orders[ord];if(!o)return;
+  if(remove){
+    if(!o.scanned.has(idx)){showToast('Collo non presente','err');return;}
+    o.scanned.delete(idx);
+    if(S.paused[ord]&&!S.paused[ord].missing.includes(idx)){
+      S.paused[ord].missing.push(idx);S.paused[ord].missing.sort((a,b)=>a-b);
+    }
+    addLog(`${ord}: collo ${idx} DE-SPUNTATO (manuale)`,'dup');
+    showToast(`↩ Collo ${idx} rimosso da ${ord}`,'err');playBeep('dup');
+  } else {
+    if(o.scanned.has(idx)){showToast(`⚠️ Collo ${idx} già scansionato!`,'err');playBeep('dup');return;}
+    o.scanned.add(idx);
+    if(S.paused[ord]){
+      S.paused[ord].missing=S.paused[ord].missing.filter(x=>x!==idx);
+      if(!S.paused[ord].missing.length){delete S.paused[ord];showToast(`✅ Ordine ${ord} pausa completato!`,'complete');playBeep('complete');}
+    }
+    const rem=o.total-o.scanned.size;
+    if(rem===0){showToast(`🎉 Ordine ${ord} COMPLETATO!`,'complete');playBeep('complete');addLog(`${ord}: COMPLETATO ✓ (manuale)`,'ok');}
+    else{showToast(`✅ Collo ${idx}/${o.total} spuntato`,'ok');playBeep('ok');addLog(`${ord}: collo ${idx}/${o.total} ✓ (manuale)`,'ok');}
+    if(clientDone(cl))showToast(`🏆 Cliente "${cl}" completato!`,'complete');
+  }
+  renderAll();saveState();
+}
+function quickSpunta(ord,cl,val){
+  const idx=parseInt(val);
+  const o=S.clients[cl]?.orders[ord];
+  if(!o||isNaN(idx)||idx<1||idx>o.total){showToast(`❌ Collo non valido (1–${o?.total||'?'})`,'err');playBeep('error');return;}
+  showSpuntaModal(ord,cl,idx);
+}
+function quickSpuntaBtn(ord,cl,input){quickSpunta(ord,cl,input.value);input.value='';}
+
 // ── RICONOSCI PACCO ───────────────────────────────────
 function openRic(){
   document.getElementById('ricInput').value='';
-  const r=document.getElementById('ricResult');
-  r.style.display='none';r.className='ric-result';
+  const r=document.getElementById('ricResult');r.style.display='none';r.className='ric-result';
   document.getElementById('modalRic').classList.add('show');
   setTimeout(()=>document.getElementById('ricInput').focus(),200);
 }
 function closeRic(){
   document.getElementById('modalRic').classList.remove('show');
-  // re-focus scanner if on scanner tab
   if(document.getElementById('imode-scanner').classList.contains('active'))
     setTimeout(()=>document.getElementById('scanInput').focus(),100);
 }
-document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('ricInput').addEventListener('keydown',function(e){
-    if(e.key==='Enter'){const v=this.value.trim();if(v)riconosciPacco(v);}
-  });
-  document.getElementById('ricInput').addEventListener('input',function(){
-    const v=this.value.trim();
-    // auto-fire if looks complete (lettore fisico invia tutto in un colpo)
-    if(v.length>=4) setTimeout(()=>{if(this.value.trim()===v)riconosciPacco(v);},120);
-  });
-  // close on backdrop click
-  document.getElementById('modalRic').addEventListener('click',function(e){
-    if(e.target===this) closeRic();
-  });
-});
 function riconosciPacco(raw){
   const res=document.getElementById('ricResult');
   const cnt=document.getElementById('ricResultContent');
-  const {orderNum,cIdx,cTot}=parseBarcode(raw);
+  const{orderNum,cIdx,cTot}=parseBarcode(raw);
   if(!orderNum){
     res.className='ric-result err';res.style.display='block';
     cnt.innerHTML=`<div class="ric-res-err">❌ Formato non riconosciuto: "${raw.substring(0,30)}"</div>`;
@@ -1456,9 +1328,8 @@ function riconosciPacco(raw){
     cnt.innerHTML=`<div class="ric-res-err">❌ Ordine <b>${orderNum}</b> non trovato in lista</div>`;
     playBeep('error');return;
   }
-  const {client,order,orderNum:on}=resolved;
-  const sc=order.scanned.size,tot=order.total,rem=tot-sc;
-  const ip=!!S.paused[on];
+  const{client,order,orderNum:on}=resolved;
+  const sc=order.scanned.size,tot=order.total,rem=tot-sc,ip=!!S.paused[on];
   const pct=tot>0?Math.round(sc/tot*100):0;
   const colloInfo=cIdx?`Collo <b>${cIdx}</b>${cTot?' di '+cTot:''} · `:'';
   const statusColor=sc===tot?'var(--ok)':ip?'var(--pause)':'var(--warn)';
@@ -1471,188 +1342,206 @@ function riconosciPacco(raw){
     <div class="ric-res-colli" style="color:${statusColor}">${statusLabel}</div>
     ${order.desc?`<div class="ric-res-desc">${escH(order.desc)}</div>`:''}
   `;
-  playBeep('ok');
-  document.getElementById('ricInput').value='';
-  document.getElementById('ricInput').focus();
+  playBeep('ok');document.getElementById('ricInput').value='';document.getElementById('ricInput').focus();
+}
+
+// ── PIANO DI CARICO PDF ───────────────────────────────
+let P={};
+const LS_PIANO='scanner_piano_v2';
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+document.getElementById('pdfInput').addEventListener('change',function(e){
+  if(!e.target.files[0])return;parsePianoPDF(e.target.files[0]);e.target.value='';
+});
+async function parsePianoPDF(file){
+  const st=document.getElementById('pdfStatus');
+  st.className='pdf-status';st.textContent='⏳ Elaborazione PDF...';
+  document.getElementById('pdfOrdList').innerHTML='';
+  try{
+    const buf=await file.arrayBuffer();
+    const pdf=await pdfjsLib.getDocument({data:buf}).promise;
+    const newData={};
+    for(let p=1;p<=pdf.numPages;p++){
+      const page=await pdf.getPage(p);
+      const tc=await page.getTextContent();
+      const items=tc.items.map(i=>({str:i.str.trim(),x:i.transform[4],y:i.transform[5]})).filter(i=>i.str.length>0);
+      items.sort((a,b)=>b.y-a.y||a.x-b.x);
+      const lines=[];let curY=null,curLine=[];
+      for(const it of items){
+        if(curY===null||Math.abs(it.y-curY)>3){if(curLine.length)lines.push(curLine.map(x=>x.str).join(' '));curLine=[it];curY=it.y;}
+        else curLine.push(it);
+      }
+      if(curLine.length)lines.push(curLine.map(x=>x.str).join(' '));
+      const ordM=lines.join('\n').match(/Ord:\s*(\d+)/);if(!ordM)continue;
+      const ordNum=ordM[1];if(!newData[ordNum])newData[ordNum]={};
+      let inColli=false,block=[];
+      for(const line of lines){
+        const l=line.trim();if(!l)continue;
+        if(/Codice\s+Qta\s+Descrizione/.test(l)&&/Colli/.test(l)){inColli=true;block=[];continue;}
+        if(/TOTALE COLLI|CONTINUA A PAGINA/.test(l)){inColli=false;continue;}
+        if(!inColli)continue;
+        block.push(l);
+        const etM=l.match(/etichette\s+nr\.\s+([\d,\s]+)/i);
+        if(etM){
+          const nums=etM[1].split(',').map(x=>parseInt(x.trim())).filter(n=>!isNaN(n)&&n>0);
+          let raw=block.join(' ');
+          raw=raw.replace(/etichette\s+nr\.\s+[\d,\s]+/gi,'');
+          raw=raw.replace(/\([TC]\)\s*\*?M?\*?\s*/g,'');
+          raw=raw.replace(/^\s*[A-Z0-9\|\-\:\/]+\s+[\d\.]+\s+/,'');
+          raw=raw.replace(/\s+FM\s+\d+\s*$/,'').replace(/\s+\d+\s*$/,'');
+          raw=raw.replace(/\s+/g,' ').trim();
+          nums.forEach(n=>{if(!newData[ordNum][n])newData[ordNum][n]=raw;});
+          block=[];
+        }
+      }
+    }
+    for(const[ord,colls] of Object.entries(newData))P[ord]=Object.assign(P[ord]||{},colls);
+    savePiano();renderAll();renderPdfPage();
+    const tot=Object.values(P).reduce((a,c)=>a+Object.keys(c).length,0);
+    st.className='pdf-status ok';
+    st.textContent=`✅ Piano caricato: ${Object.keys(newData).length} ordini, ${tot} colli totali`;
+    showToast(`📄 Piano caricato: ${Object.keys(newData).length} ordini`,'ok');playBeep('ok');
+  }catch(e){
+    st.className='pdf-status err';st.textContent='❌ Errore: '+e.message;
+    showToast('❌ Errore PDF: '+e.message,'err');
+  }
+}
+function savePiano(){try{localStorage.setItem(LS_PIANO,JSON.stringify(P));}catch(e){}}
+function loadPiano(){try{const r=localStorage.getItem(LS_PIANO);if(r)P=JSON.parse(r);}catch(e){P={};}}
+function renderPdfPage(){
+  const list=document.getElementById('pdfOrdList');if(!list)return;
+  if(!Object.keys(P).length){list.innerHTML='';return;}
+  let html='';
+  for(const[ord,colli] of Object.entries(P)){
+    const n=Object.keys(colli).length;
+    const inExcel=Object.values(S.clients).some(c=>c.orders[ord]);
+    html+=`<div class="pdf-ord-item"><div class="pdf-ord-num">Ord. ${ord}</div><div class="pdf-ord-info ${inExcel?'ok':'warn'}">${n} colli · ${inExcel?'✓ in lista Excel':'⚠️ non in lista Excel'}</div></div>`;
+  }
+  list.innerHTML=html;
 }
 
 // ── LOCAL STORAGE ─────────────────────────────────────
-const LS_KEY = 'scanner_carico_v1';
-
-function saveState() {
-  try {
-    const data = {
-      clients: {},
-      paused: S.paused,
-      filter: S.filter,
-      sess: { active: SESS.active, client: SESS.client, order: SESS.order },
-      savedAt: new Date().toISOString()
-    };
-    for (const [cn, cd] of Object.entries(S.clients)) {
-      data.clients[cn] = { orders: {} };
-      for (const [on, od] of Object.entries(cd.orders)) {
-        data.clients[cn].orders[on] = {
-          total: od.total,
-          scanned: [...od.scanned],
-          desc: od.desc
-        };
-      }
+const LS_KEY='scanner_carico_v1';
+function saveState(){
+  try{
+    const data={clients:{},paused:S.paused,filter:S.filter,
+      sess:{active:SESS.active,client:SESS.client,order:SESS.order},savedAt:new Date().toISOString()};
+    for(const[cn,cd] of Object.entries(S.clients)){
+      data.clients[cn]={orders:{}};
+      for(const[on,od] of Object.entries(cd.orders))
+        data.clients[cn].orders[on]={total:od.total,scanned:[...od.scanned],desc:od.desc};
     }
-    localStorage.setItem(LS_KEY, JSON.stringify(data));
-    updateSaveInfo();
-  } catch(e) {}
+    localStorage.setItem(LS_KEY,JSON.stringify(data));updateSaveInfo();
+  }catch(e){}
 }
-
-function loadState() {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (!raw) return false;
-    const data = JSON.parse(raw);
-    if (!data.clients || !Object.keys(data.clients).length) return false;
-    S.clients = {};
-    for (const [cn, cd] of Object.entries(data.clients)) {
-      S.clients[cn] = { orders: {} };
-      for (const [on, od] of Object.entries(cd.orders)) {
-        S.clients[cn].orders[on] = {
-          total: od.total,
-          scanned: new Set(od.scanned || []),
-          desc: od.desc || ''
-        };
-      }
+function loadState(){
+  try{
+    const raw=localStorage.getItem(LS_KEY);if(!raw)return false;
+    const data=JSON.parse(raw);
+    if(!data.clients||!Object.keys(data.clients).length)return false;
+    S.clients={};
+    for(const[cn,cd] of Object.entries(data.clients)){
+      S.clients[cn]={orders:{}};
+      for(const[on,od] of Object.entries(cd.orders))
+        S.clients[cn].orders[on]={total:od.total,scanned:new Set(od.scanned||[]),desc:od.desc||''};
     }
-    S.paused = data.paused || {};
-    S.filter = data.filter || 'all';
-    if (data.sess && data.sess.active) {
-      SESS.active = data.sess.active;
-      SESS.client = data.sess.client;
-      SESS.order = data.sess.order;
-    }
-    return data.savedAt || true;
-  } catch(e) { return false; }
+    S.paused=data.paused||{};S.filter=data.filter||'all';
+    if(data.sess?.active){SESS.active=data.sess.active;SESS.client=data.sess.client;SESS.order=data.sess.order;}
+    return data.savedAt||true;
+  }catch(e){return false;}
 }
-
-function clearSaved() {
-  if (!confirm('Cancellare tutti i dati salvati? Questa azione è irreversibile.')) return;
-  localStorage.removeItem(LS_KEY);
-  S.clients = {}; S.paused = {}; S.filter = 'all';
-  SESS.active = false; SESS.client = null; SESS.order = null;
-  renderAll(); populateSelects(); updateSessionUI(); updateSaveInfo(); updateReportStats();
-  document.getElementById('topSub').textContent = 'Nessuna lista caricata';
-  showToast('🗑 Dati cancellati', 'err');
+function clearSaved(){
+  if(!confirm('Cancellare tutti i dati salvati?'))return;
+  localStorage.removeItem(LS_KEY);localStorage.removeItem(LS_PIANO);
+  S.clients={};S.paused={};S.filter='all';P={};
+  SESS.active=false;SESS.client=null;SESS.order=null;
+  renderAll();populateSelects();updateSessionUI();updateSaveInfo();updateReportStats();
+  document.getElementById('topSub').textContent='Nessuna lista caricata';
+  document.getElementById('pdfStatus').textContent='Nessun piano caricato';
+  document.getElementById('pdfOrdList').innerHTML='';
+  showToast('🗑 Dati cancellati','err');
 }
-
-function updateSaveInfo() {
-  const el = document.getElementById('saveInfo');
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (!raw) { el.textContent = 'Nessun dato salvato in locale.'; return; }
-    const data = JSON.parse(raw);
-    const nc = Object.keys(data.clients || {}).length;
-    const no = Object.values(data.clients || {}).reduce((a,c)=>a+Object.keys(c.orders).length,0);
-    const date = data.savedAt ? new Date(data.savedAt).toLocaleString('it-IT') : '—';
-    el.textContent = `${nc} clienti · ${no} ordini salvati\nUltimo salvataggio: ${date}`;
-  } catch(e) { el.textContent = 'Errore lettura dati.'; }
+function updateSaveInfo(){
+  const el=document.getElementById('saveInfo');if(!el)return;
+  try{
+    const raw=localStorage.getItem(LS_KEY);
+    if(!raw){el.textContent='Nessun dato salvato in locale.';return;}
+    const data=JSON.parse(raw);
+    const nc=Object.keys(data.clients||{}).length;
+    const no=Object.values(data.clients||{}).reduce((a,c)=>a+Object.keys(c.orders).length,0);
+    const date=data.savedAt?new Date(data.savedAt).toLocaleString('it-IT'):'—';
+    el.textContent=`${nc} clienti · ${no} ordini salvati\nUltimo salvataggio: ${date}`;
+  }catch(e){el.textContent='Errore lettura dati.';}
 }
-
-function dismissBanner() {
-  document.getElementById('restoreBanner').classList.remove('show');
-}
-
-function updateReportStats() {
-  const orders = Object.values(S.clients).flatMap(c => Object.entries(c.orders));
-  const comp = orders.filter(([,o]) => o.scanned.size === o.total).length;
-  const paused = Object.keys(S.paused).length;
-  const inc = orders.length - comp;
-  document.getElementById('rStatComp').textContent = comp;
-  document.getElementById('rStatInc').textContent = inc;
-  document.getElementById('rStatPause').textContent = paused;
-  const btnR = document.getElementById('btnReport');
-  const info = document.getElementById('reportInfo');
-  if (!orders.length) {
-    btnR.disabled = true;
-    info.textContent = 'Carica una lista Excel per generare il report.';
-  } else {
-    btnR.disabled = false;
-    const sc = orders.reduce((a,[,o])=>a+o.scanned.size,0);
-    const tot = orders.reduce((a,[,o])=>a+o.total,0);
-    info.textContent = `${orders.length} ordini · ${sc}/${tot} colli scansionati\n${comp} completati · ${inc} incompleti · ${paused} in pausa`;
+function dismissBanner(){document.getElementById('restoreBanner').classList.remove('show');}
+function updateReportStats(){
+  const orders=Object.values(S.clients).flatMap(c=>Object.entries(c.orders));
+  const comp=orders.filter(([,o])=>o.scanned.size===o.total).length;
+  const paused=Object.keys(S.paused).length,inc=orders.length-comp;
+  const rc=document.getElementById('rStatComp'),ri=document.getElementById('rStatInc'),rp=document.getElementById('rStatPause');
+  if(rc)rc.textContent=comp;if(ri)ri.textContent=inc;if(rp)rp.textContent=paused;
+  const btnR=document.getElementById('btnReport'),info=document.getElementById('reportInfo');
+  if(!orders.length){if(btnR)btnR.disabled=true;if(info)info.textContent='Carica una lista Excel per generare il report.';}
+  else{
+    if(btnR)btnR.disabled=false;
+    const sc=orders.reduce((a,[,o])=>a+o.scanned.size,0),tot=orders.reduce((a,[,o])=>a+o.total,0);
+    if(info)info.textContent=`${orders.length} ordini · ${sc}/${tot} colli\n${comp} completati · ${inc} incompleti · ${paused} in pausa`;
   }
 }
-
-// ── REPORT EXCEL ──────────────────────────────────────
-function downloadReport() {
-  try {
-    const wb = XLSX.utils.book_new();
-    const now = new Date();
-    const dateStr = now.toLocaleDateString('it-IT').replace(/\//g,'-');
-
-    // ── Foglio 1: Completati
-    const comp = [];
-    comp.push(['Cliente','Ordine','Colli Totali','Colli Scansionati','Descrizione']);
-    for (const [cn, cd] of Object.entries(S.clients))
-      for (const [on, od] of Object.entries(cd.orders))
-        if (od.scanned.size === od.total)
-          comp.push([cn, on, od.total, od.scanned.size, od.desc]);
-    const wsComp = XLSX.utils.aoa_to_sheet(comp);
-    wsComp['!cols'] = [{wch:30},{wch:12},{wch:14},{wch:18},{wch:40}];
-    XLSX.utils.book_append_sheet(wb, wsComp, 'Completati');
-
-    // ── Foglio 2: Incompleti
-    const inc = [];
-    inc.push(['Cliente','Ordine','Colli Totali','Scansionati','Mancanti','Lista Mancanti','Descrizione']);
-    for (const [cn, cd] of Object.entries(S.clients))
-      for (const [on, od] of Object.entries(cd.orders))
-        if (od.scanned.size < od.total) {
-          const miss = [];
-          for (let i=1; i<=od.total; i++) if (!od.scanned.has(i)) miss.push(i);
-          inc.push([cn, on, od.total, od.scanned.size, miss.length, miss.join(', '), od.desc]);
-        }
-    const wsInc = XLSX.utils.aoa_to_sheet(inc);
-    wsInc['!cols'] = [{wch:30},{wch:12},{wch:14},{wch:14},{wch:10},{wch:50},{wch:40}];
-    XLSX.utils.book_append_sheet(wb, wsInc, 'Incompleti');
-
-    // ── Foglio 3: In Pausa
-    const psd = [];
-    psd.push(['Ordine','Cliente','Colli Totali','Scansionati','Mancanti','Lista Mancanti','Descrizione']);
-    for (const [on, pd] of Object.entries(S.paused)) {
-      const od = S.clients[pd.clientName]?.orders[on];
-      if (!od) continue;
-      psd.push([on, pd.clientName, od.total, od.scanned.size, pd.missing.length, pd.missing.join(', '), od.desc]);
+function downloadReport(){
+  try{
+    const wb=XLSX.utils.book_new();
+    const dateStr=new Date().toLocaleDateString('it-IT').replace(/\//g,'-');
+    const comp=[['Cliente','Ordine','Colli Totali','Scansionati','Descrizione']];
+    const inc=[['Cliente','Ordine','Colli Totali','Scansionati','Mancanti','Lista Mancanti','Descrizione']];
+    const psd=[['Ordine','Cliente','Colli Totali','Scansionati','Mancanti','Lista Mancanti','Descrizione']];
+    for(const[cn,cd] of Object.entries(S.clients))
+      for(const[on,od] of Object.entries(cd.orders)){
+        if(od.scanned.size===od.total)comp.push([cn,on,od.total,od.scanned.size,od.desc]);
+        else{const miss=[];for(let i=1;i<=od.total;i++)if(!od.scanned.has(i))miss.push(i);inc.push([cn,on,od.total,od.scanned.size,miss.length,miss.join(', '),od.desc]);}
+      }
+    for(const[on,pd] of Object.entries(S.paused)){
+      const od=S.clients[pd.clientName]?.orders[on];if(!od)continue;
+      psd.push([on,pd.clientName,od.total,od.scanned.size,pd.missing.length,pd.missing.join(', '),od.desc]);
     }
-    if (psd.length === 1) psd.push(['(nessun ordine in pausa)','','','','','','']);
-    const wsPsd = XLSX.utils.aoa_to_sheet(psd);
-    wsPsd['!cols'] = [{wch:12},{wch:30},{wch:14},{wch:14},{wch:10},{wch:50},{wch:40}];
-    XLSX.utils.book_append_sheet(wb, wsPsd, 'In Pausa');
-
-    XLSX.writeFile(wb, `report_carico_${dateStr}.xlsx`);
-    showToast('📥 Report scaricato!', 'ok');
-    playBeep('ok');
-  } catch(e) {
-    showToast('❌ Errore report: '+e.message, 'err');
-  }
+    if(psd.length===1)psd.push(['(nessun ordine in pausa)','','','','','','']);
+    const wsC=XLSX.utils.aoa_to_sheet(comp);wsC['!cols']=[{wch:30},{wch:12},{wch:14},{wch:14},{wch:40}];
+    const wsI=XLSX.utils.aoa_to_sheet(inc);wsI['!cols']=[{wch:30},{wch:12},{wch:14},{wch:14},{wch:10},{wch:50},{wch:40}];
+    const wsP=XLSX.utils.aoa_to_sheet(psd);wsP['!cols']=[{wch:12},{wch:30},{wch:14},{wch:14},{wch:10},{wch:50},{wch:40}];
+    XLSX.utils.book_append_sheet(wb,wsC,'Completati');XLSX.utils.book_append_sheet(wb,wsI,'Incompleti');XLSX.utils.book_append_sheet(wb,wsP,'In Pausa');
+    XLSX.writeFile(wb,`report_carico_${dateStr}.xlsx`);
+    showToast('📥 Report scaricato!','ok');playBeep('ok');
+  }catch(e){showToast('❌ Errore report: '+e.message,'err');}
 }
 
-// ── INIT: ripristina da localStorage ─────────────────
-(function initFromStorage() {
-  const savedAt = loadState();
-  if (savedAt) {
-    const nc = Object.keys(S.clients).length;
-    const no = Object.values(S.clients).reduce((a,c)=>a+Object.keys(c.orders).length,0);
-    document.getElementById('topSub').textContent = `${nc} clienti · ${no} ordini · ${totColli()} colli`;
-    renderAll();
-    populateSelects();
-    updateSessionUI();
-    updateReportStats();
-    updateSaveInfo();
-    const banner = document.getElementById('restoreBanner');
-    const date = typeof savedAt === 'string' ? new Date(savedAt).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}) : '';
-    document.getElementById('restoreMsg').textContent = `✅ Progressi ripristinati${date?' ('+date+')':''}`;
-    banner.classList.add('show');
-    setTimeout(() => banner.classList.remove('show'), 4000);
+// ── EVENT LISTENERS ───────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('modalCollo').addEventListener('click',function(e){if(e.target===this)closeColloModal();});
+  document.getElementById('modalSpunta').addEventListener('click',function(e){if(e.target===this)closeSpunta();});
+  document.getElementById('modalRic').addEventListener('click',function(e){if(e.target===this)closeRic();});
+  document.getElementById('ricInput').addEventListener('keydown',function(e){if(e.key==='Enter'){const v=this.value.trim();if(v)riconosciPacco(v);}});
+  document.getElementById('ricInput').addEventListener('input',function(){
+    const v=this.value.trim();if(v.length>=4)setTimeout(()=>{if(this.value.trim()===v)riconosciPacco(v);},120);
+  });
+});
+
+// ── INIT ──────────────────────────────────────────────
+loadPiano();
+(function(){
+  const savedAt=loadState();
+  if(savedAt){
+    const nc=Object.keys(S.clients).length;
+    const no=Object.values(S.clients).reduce((a,c)=>a+Object.keys(c.orders).length,0);
+    document.getElementById('topSub').textContent=`${nc} clienti · ${no} ordini · ${totColli()} colli`;
+    renderAll();populateSelects();updateSessionUI();updateReportStats();updateSaveInfo();
+    const banner=document.getElementById('restoreBanner');
+    const date=typeof savedAt==='string'?new Date(savedAt).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}):'';
+    document.getElementById('restoreMsg').textContent=`✅ Progressi ripristinati${date?' ('+date+')':''}`;
+    banner.classList.add('show');setTimeout(()=>banner.classList.remove('show'),4000);
   }
 })();
 
-// Keep scanner focused when on scan page in scanner mode
+// Keep scanner focused
 setInterval(()=>{
   const si=document.getElementById('scanInput');
   const onScan=document.getElementById('page-scan').classList.contains('active');
@@ -1660,6 +1549,7 @@ setInterval(()=>{
   if(onScan&&scanMode&&si&&document.activeElement!==si&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='BUTTON'&&document.activeElement.tagName!=='SELECT')
     si.focus();
 },1500);
+
 
 window.addEventListener('beforeunload',()=>stopCamera());
 </script>
