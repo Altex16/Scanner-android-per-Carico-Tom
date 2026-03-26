@@ -175,6 +175,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .btn-cam-start{flex:1;padding:13px;background:var(--cam);color:#000;border:none;border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:700;cursor:pointer;}
 .btn-cam-stop{padding:13px 16px;background:var(--surf2);color:var(--muted);border:1px solid var(--border);border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;cursor:pointer;}
 .btn-cam-flip{padding:13px 14px;background:var(--surf2);color:var(--muted);border:1px solid var(--border);border-radius:10px;font-size:1rem;cursor:pointer;}
+.btn-cam-torch{padding:13px 14px;background:var(--surf2);color:var(--muted);border:1px solid var(--border);border-radius:10px;font-size:1rem;cursor:pointer;transition:all .2s;}
+.btn-cam-torch.on{background:rgba(240,165,0,.15);border-color:var(--acc);}
+.ric-cam-sbar{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.75);padding:8px 10px;font-family:'IBM Plex Mono',monospace;font-size:.7rem;text-align:center;}
+.ric-cam-sbar.s{color:var(--muted);}.ric-cam-sbar.f{color:var(--ok);}.ric-cam-sbar.e{color:var(--err);}
 
 /* Status */
 .scan-status{
@@ -197,6 +201,17 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .audio-btn.on{border-color:var(--ok);color:var(--ok);}
 .adot{width:7px;height:7px;border-radius:50%;background:var(--muted);}
 .audio-btn.on .adot{background:var(--ok);}
+
+/* Multiscansione toggle */
+.multi-btn{
+  display:flex;align-items:center;gap:6px;
+  font-family:'IBM Plex Mono',monospace;font-size:.68rem;
+  padding:8px 12px;border-radius:8px;border:1px solid var(--border);
+  background:var(--surf2);color:var(--muted);cursor:pointer;transition:all .2s;
+}
+.multi-btn.on{border-color:var(--acc);color:var(--acc);}
+.mdot{width:7px;height:7px;border-radius:50%;background:var(--muted);}
+.multi-btn.on .mdot{background:var(--acc);}
 
 /* ══ PAGE: ORDINI ══ */
 #page-ordini{background:var(--bg);}
@@ -533,8 +548,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
           <div class="cam-sbar s" id="camSbar">Premi AVVIA per aprire la fotocamera</div>
         </div>
         <div class="cam-btns">
-          <button class="btn-cam-start" id="btnCamStart" onclick="startCamera()">📷 AVVIA</button>
+          <button class="btn-cam-start" id="btnCamStart" onclick="startCamera('camVideo',handleCamScan,'scan')">📷 AVVIA</button>
           <button class="btn-cam-flip" id="btnCamFlip" onclick="flipCamera()" style="display:none">🔄</button>
+          <button class="btn-cam-torch" id="btnCamTorch" onclick="toggleTorch()" style="display:none">🔦</button>
           <button class="btn-cam-stop" id="btnCamStop" onclick="stopCamera()" style="display:none">■ STOP</button>
         </div>
       </div>
@@ -546,11 +562,15 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     <!-- Riconosci pacco -->
     <button class="btn-ric" onclick="openRic()">🔍 RICONOSCI PACCO</button>
 
-    <!-- Audio toggle -->
+    <!-- Audio toggle + Multiscansione -->
     <div class="audio-row">
       <button class="audio-btn on" id="audioBtn" onclick="toggleAudio()">
         <div class="adot" id="adot" style="background:var(--ok)"></div>
         <span id="atxt">AUDIO ON</span>
+      </button>
+      <button class="multi-btn" id="multiBtn" onclick="toggleMulti()">
+        <div class="mdot" id="mdot"></div>
+        <span id="mtxt">MULTI OFF</span>
       </button>
     </div>
 
@@ -682,6 +702,22 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
       <span class="ric-input-ico">▮▮▯▮▯</span>
       <input type="text" id="ricInput" placeholder="Scansiona o digita codice" autocomplete="off" inputmode="none">
     </div>
+    <div id="ricCamSection" style="display:none;margin-bottom:10px;">
+      <div class="cam-wrap" style="border-radius:10px;overflow:hidden;background:#000;aspect-ratio:4/3;position:relative;">
+        <video id="ricCamVideo" playsinline muted style="width:100%;height:100%;object-fit:cover;display:block;"></video>
+        <div class="cam-overlay"><div class="cam-frame"><div class="cam-line"></div></div></div>
+        <div class="ric-cam-sbar s" id="ricCamSbar">Premi AVVIA per aprire la fotocamera</div>
+      </div>
+      <div class="cam-btns" style="margin-top:8px;">
+        <button class="btn-cam-start" id="btnRicCamStart" onclick="startRicCamera()">📷 AVVIA</button>
+        <button class="btn-cam-flip" id="btnRicCamFlip" onclick="flipRicCamera()" style="display:none">🔄</button>
+        <button class="btn-cam-torch" id="btnRicCamTorch" onclick="toggleTorch()" style="display:none">🔦</button>
+        <button class="btn-cam-stop" id="btnRicCamStop" onclick="stopRicCamera()" style="display:none">■ STOP</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <button class="ric-close" onclick="toggleRicCam()" id="btnRicCamToggle" style="flex:1;background:var(--surf2);border-color:var(--cam);color:var(--cam);">📷 Usa fotocamera</button>
+    </div>
     <div class="ric-result" id="ricResult">
       <div id="ricResultContent"></div>
     </div>
@@ -725,8 +761,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://unpkg.com/@zxing/library@0.19.1/umd/index.min.js"></script>
 <script>
 
@@ -746,6 +780,8 @@ function playBeep(type){
     comp.connect(ctx.destination);
     const c={
       ok:[{f:880,d:.12,v:1},{f:1200,d:.18,v:1}],
+      multi_ok:[{f:900,d:.45,v:1}],
+      multi_diff:[{f:750,d:.15,v:1},{f:750,d:.15,v:1}],
       error:[{f:220,d:.25,v:1},{f:160,d:.3,v:1},{f:120,d:.2,v:1}],
       dup:[{f:440,d:.18,v:1},{f:330,d:.22,v:1}],
       complete:[{f:660,d:.12,v:1},{f:880,d:.12,v:1},{f:1100,d:.12,v:1},{f:1320,d:.2,v:1}],
@@ -772,6 +808,20 @@ function toggleAudio(){
   dot.style.background=audioOn?'var(--ok)':'var(--muted)';
   txt.textContent=audioOn?'AUDIO ON':'AUDIO OFF — tocca per attivare';
   if(audioOn){try{getCtx();}catch(e){}playBeep('ok');}
+}
+
+// ── MULTISCANSIONE ────────────────────────────────────
+// OFF di default — si resetta a ogni apertura app
+let multiOn=false;
+function toggleMulti(){
+  multiOn=!multiOn;
+  const btn=document.getElementById('multiBtn');
+  const dot=document.getElementById('mdot');
+  const txt=document.getElementById('mtxt');
+  btn.classList.toggle('on',multiOn);
+  dot.style.background=multiOn?'var(--acc)':'var(--muted)';
+  txt.textContent=multiOn?'MULTI ON':'MULTI OFF';
+  showToast(multiOn?'🔀 Multiscansione ON — stesso cliente libero':'🔒 Multiscansione OFF','');
 }
 
 // ── STATE ─────────────────────────────────────────────
@@ -896,7 +946,11 @@ function refreshSessProg(){
 function checkSession(orderNum,clientName){
   if(!SESS.active)return 'ok';
   if(clientName!==SESS.client)return 'wrong-client';
-  if(orderNum!==SESS.order)return 'wrong-order';
+  if(orderNum!==SESS.order){
+    // stesso cliente: se multiscansione ON → passa con 'multi-order'
+    if(multiOn)return 'multi-order';
+    return 'wrong-order';
+  }
   return 'ok';
 }
 
@@ -1005,7 +1059,9 @@ function processScan(raw,source='scanner',bypass=false){
   }
   if(!bypass){
     const sc=checkSession(orderNum,fClient);
-    if(sc!=='ok'){showModal(raw,source,orderNum,fClient,sc);return false;}
+    if(sc==='wrong-client'){showModal(raw,source,orderNum,fClient,sc);return false;}
+    if(sc==='wrong-order'){showModal(raw,source,orderNum,fClient,sc);return false;}
+    // 'multi-order': stesso cliente, ordine diverso — procede silenzioso
   }
   const isPaused=!!S.paused[orderNum];
   if(cIdx===null){
@@ -1025,13 +1081,22 @@ function processScan(raw,source='scanner',bypass=false){
     return false;
   }
   fOrder.scanned.add(cIdx);flashOk();
+  // Determina tipo beep:
+  // - ordine corrente in sessione → multi_ok (beep lungo)
+  // - stesso cliente ordine diverso (multi ON) → multi_diff (doppio beep)
+  // - fuori sessione o bypass → ok normale
+  const isMultiDiff = SESS.active && multiOn && fClient===SESS.client && orderNum!==SESS.order;
+  const isSessionOrder = SESS.active && orderNum===SESS.order;
   if(isPaused){
     S.paused[orderNum].missing=S.paused[orderNum].missing.filter(x=>x!==cIdx);
     if(!S.paused[orderNum].missing.length){delete S.paused[orderNum];showToast(`✅ Ordine pausa ${orderNum} completato!`,'complete');playBeep('complete');}
-    else playBeep('ok');
-  } else playBeep('ok');
+    else playBeep(isMultiDiff?'multi_diff':isSessionOrder?'multi_ok':'ok');
+  } else {
+    playBeep(isMultiDiff?'multi_diff':isSessionOrder?'multi_ok':'ok');
+  }
   const rem=fOrder.total-fOrder.scanned.size;
-  const clientTag=(!SESS.active||fClient!==SESS.client)?` [${fClient}]`:'';
+  const clientTag = (!SESS.active||fClient!==SESS.client) ? ` [${fClient}]` :
+    (isMultiDiff ? ` [Ord.${orderNum}]` : '');
   if(rem===0){
     setStatus(`✅ Ordine ${orderNum} COMPLETATO! Tutti i ${fOrder.total} colli.${clientTag}`,'ok');
     if(!isPaused){showToast(`🎉 Ordine ${orderNum} completato!`,'complete');playBeep('complete');}
@@ -1305,13 +1370,36 @@ function quickSpuntaBtn(ord,cl,input){quickSpunta(ord,cl,input.value);input.valu
 function openRic(){
   document.getElementById('ricInput').value='';
   const r=document.getElementById('ricResult');r.style.display='none';r.className='ric-result';
+  document.getElementById('ricCamSection').style.display='none';
+  document.getElementById('btnRicCamToggle').textContent='📷 Usa fotocamera';
   document.getElementById('modalRic').classList.add('show');
   setTimeout(()=>document.getElementById('ricInput').focus(),200);
 }
 function closeRic(){
+  stopRicCamera();
+  document.getElementById('ricCamSection').style.display='none';
   document.getElementById('modalRic').classList.remove('show');
   if(document.getElementById('imode-scanner').classList.contains('active'))
     setTimeout(()=>document.getElementById('scanInput').focus(),100);
+}
+function toggleRicCam(){
+  const sec=document.getElementById('ricCamSection');
+  const btn=document.getElementById('btnRicCamToggle');
+  const open=sec.style.display==='none';
+  sec.style.display=open?'block':'none';
+  btn.textContent=open?'📷 Chiudi fotocamera':'📷 Usa fotocamera';
+  if(!open)stopRicCamera();
+}
+function startRicCamera(){
+  startCamera('ricCamVideo',handleRicCamScan,'ric');
+}
+async function flipRicCamera(){
+  if(allDevices.length>1){
+    deviceIndex=(deviceIndex+1)%allDevices.length;
+    stopRicCamera(true);
+    await new Promise(r=>setTimeout(r,300));
+    startRicCamera();
+  }
 }
 function riconosciPacco(raw){
   const res=document.getElementById('ricResult');
@@ -1540,6 +1628,213 @@ loadPiano();
     banner.classList.add('show');setTimeout(()=>banner.classList.remove('show'),4000);
   }
 })();
+
+
+// ── CAMERA ────────────────────────────────────────────
+let codeReader=null,camStream=null,facingMode='environment',camCooldown=false;
+let allDevices=[],deviceIndex=0,cooldownTimer=null,cooldownInterval=null;
+let torchOn=false,torchTrack=null;
+const COOLDOWN_MS=2000;
+
+async function startCamera(videoId, onResult, context='scan'){
+  videoId = videoId||'camVideo';
+  const isRic = context==='ric';
+  const sbar  = isRic ? document.getElementById('ricCamSbar') : document.getElementById('camSbar');
+  const btnStart = isRic ? document.getElementById('btnRicCamStart') : document.getElementById('btnCamStart');
+  const btnStop  = isRic ? document.getElementById('btnRicCamStop')  : document.getElementById('btnCamStop');
+  const btnFlip  = isRic ? document.getElementById('btnRicCamFlip')  : document.getElementById('btnCamFlip');
+  const btnTorch = isRic ? document.getElementById('btnRicCamTorch') : document.getElementById('btnCamTorch');
+  const camLine  = isRic ? null : document.getElementById('camLine');
+
+  if(sbar){sbar.textContent='Avvio fotocamera...';sbar.className=(isRic?'ric-cam-sbar':'cam-sbar')+' s';}
+  if(btnStart) btnStart.style.display='none';
+  torchOn=false;if(btnTorch)btnTorch.textContent='🔦';
+
+  try{
+    if(typeof ZXing==='undefined'){
+      if(sbar){sbar.textContent='Libreria non caricata.';sbar.className=(isRic?'ric-cam-sbar':'cam-sbar')+' e';}
+      if(btnStart)btnStart.style.display='block';return;
+    }
+    if(!isRic) stopCamera(true);
+    else stopRicCamera(true);
+
+    const hints=new Map();
+    const fmts=[ZXing.BarcodeFormat.QR_CODE,ZXing.BarcodeFormat.CODE_128,ZXing.BarcodeFormat.CODE_39,
+      ZXing.BarcodeFormat.EAN_13,ZXing.BarcodeFormat.EAN_8,ZXing.BarcodeFormat.DATA_MATRIX,
+      ZXing.BarcodeFormat.PDF_417,ZXing.BarcodeFormat.ITF,ZXing.BarcodeFormat.AZTEC];
+    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,fmts);
+    hints.set(ZXing.DecodeHintType.TRY_HARDER,true);
+    const reader=new ZXing.BrowserMultiFormatReader(hints,200);
+    if(isRic) codeReaderRic=reader; else codeReader=reader;
+
+    // Permission check
+    try{
+      const ps=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:facingMode}}});
+      ps.getTracks().forEach(t=>t.stop());
+    }catch(pe){
+      if(pe.name==='NotAllowedError'||pe.name==='PermissionDeniedError'){
+        if(sbar){sbar.textContent='⛔ Permesso negato.';sbar.className=(isRic?'ric-cam-sbar':'cam-sbar')+' e';}
+        if(btnStart)btnStart.style.display='block';return;
+      }
+    }
+
+    let devices=[];
+    try{devices=await ZXing.BrowserMultiFormatReader.listVideoInputDevices();}catch(e){}
+    allDevices=devices;
+    let deviceId=undefined;
+    if(devices.length>0){
+      if(facingMode==='environment'){
+        const back=devices.find(d=>{const l=d.label.toLowerCase();return(l.includes('back')||l.includes('rear'))&&!l.includes('wide')&&!l.includes('ultra')&&!l.includes('tele')&&!l.includes('macro');})||
+          devices.find(d=>{const l=d.label.toLowerCase();return l.includes('back')||l.includes('rear')||l.includes('environment');});
+        if(back)deviceId=back.deviceId;
+        if(!deviceId)deviceId=devices[0].deviceId;
+      } else {
+        const front=devices.find(d=>{const l=d.label.toLowerCase();return l.includes('front')||l.includes('user')||l.includes('selfie');});
+        if(front)deviceId=front.deviceId;
+        if(!deviceId&&devices.length>1)deviceId=devices[devices.length-1].deviceId;
+      }
+      if(devices.length>1){
+        if(btnFlip)btnFlip.style.display='block';
+        deviceIndex=devices.findIndex(d=>d.deviceId===deviceId);if(deviceIndex<0)deviceIndex=0;
+      }
+    }
+    if(btnStop)btnStop.style.display='block';
+    if(camLine)camLine.style.animationPlayState='running';
+    if(sbar){sbar.textContent='🔍 Inquadra il codice...';sbar.className=(isRic?'ric-cam-sbar':'cam-sbar')+' s';}
+
+    const video=document.getElementById(videoId);
+    const cb=(res,err)=>{
+      if(res&&!camCooldown){
+        if(onResult) onResult(res.getText());
+        startCooldown();
+      }
+    };
+    if(deviceId) await reader.decodeFromVideoDevice(deviceId,video,cb);
+    else await reader.decodeFromConstraints({video:{facingMode:{ideal:facingMode},width:{ideal:1920},height:{ideal:1080}}},video,cb);
+
+    const stream=video.srcObject;
+    if(isRic) camStreamRic=stream; else camStream=stream;
+    // Salva track per torch
+    torchTrack=stream?.getVideoTracks()[0]||null;
+    if(btnTorch){
+      // Mostra torch solo se supportato
+      const caps=torchTrack?.getCapabilities?.();
+      btnTorch.style.display=(caps&&caps.torch)?'block':'none';
+    }
+  }catch(err){
+    let msg='📷 Errore fotocamera';
+    if(err.name==='NotAllowedError')msg='⛔ Permesso negato.';
+    else if(err.name==='NotFoundError')msg='📷 Nessuna fotocamera trovata.';
+    else if(err.name==='NotReadableError')msg='📷 Fotocamera occupata da altra app.';
+    else msg=`📷 ${err.name}`;
+    if(sbar){sbar.textContent=msg;sbar.className=(isRic?'ric-cam-sbar':'cam-sbar')+' e';}
+    if(btnStart)btnStart.style.display='block';
+    if(btnStop)btnStop.style.display='none';
+    if(btnFlip)btnFlip.style.display='none';
+  }
+}
+
+function stopCamera(silent=false){
+  if(codeReader){try{codeReader.reset();}catch(e){}codeReader=null;}
+  if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
+  const video=document.getElementById('camVideo');
+  if(video&&video.srcObject){try{video.srcObject.getTracks().forEach(t=>t.stop());}catch(e){}video.srcObject=null;}
+  if(!silent){
+    const bs=document.getElementById('btnCamStart'),bp=document.getElementById('btnCamStop'),bf=document.getElementById('btnCamFlip'),bt=document.getElementById('btnCamTorch');
+    if(bs)bs.style.display='block';if(bp)bp.style.display='none';if(bf)bf.style.display='none';if(bt)bt.style.display='none';
+    const sb=document.getElementById('camSbar');if(sb){sb.textContent='Fotocamera spenta.';sb.className='cam-sbar s';}
+    const cl=document.getElementById('camLine');if(cl)cl.style.animationPlayState='paused';
+  }
+  torchOn=false;torchTrack=null;
+  camCooldown=false;clearTimeout(cooldownTimer);clearInterval(cooldownInterval);
+}
+
+let codeReaderRic=null,camStreamRic=null;
+function stopRicCamera(silent=false){
+  if(codeReaderRic){try{codeReaderRic.reset();}catch(e){}codeReaderRic=null;}
+  if(camStreamRic){camStreamRic.getTracks().forEach(t=>t.stop());camStreamRic=null;}
+  const video=document.getElementById('ricCamVideo');
+  if(video&&video.srcObject){try{video.srcObject.getTracks().forEach(t=>t.stop());}catch(e){}video.srcObject=null;}
+  if(!silent){
+    const bs=document.getElementById('btnRicCamStart'),bp=document.getElementById('btnRicCamStop'),bf=document.getElementById('btnRicCamFlip'),bt=document.getElementById('btnRicCamTorch');
+    if(bs)bs.style.display='block';if(bp)bp.style.display='none';if(bf)bf.style.display='none';if(bt)bt.style.display='none';
+    const sb=document.getElementById('ricCamSbar');if(sb){sb.textContent='Fotocamera spenta.';sb.className='ric-cam-sbar s';}
+  }
+}
+
+async function flipCamera(){
+  if(allDevices.length>1){
+    deviceIndex=(deviceIndex+1)%allDevices.length;
+    const nd=allDevices[deviceIndex];
+    const sbar=document.getElementById('camSbar');if(sbar){sbar.textContent='Cambio fotocamera...';}
+    stopCamera(true);await new Promise(r=>setTimeout(r,300));
+    const hints=new Map();
+    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,[ZXing.BarcodeFormat.QR_CODE,ZXing.BarcodeFormat.CODE_128,ZXing.BarcodeFormat.CODE_39,ZXing.BarcodeFormat.EAN_13,ZXing.BarcodeFormat.EAN_8,ZXing.BarcodeFormat.DATA_MATRIX,ZXing.BarcodeFormat.PDF_417,ZXing.BarcodeFormat.ITF]);
+    hints.set(ZXing.DecodeHintType.TRY_HARDER,true);
+    codeReader=new ZXing.BrowserMultiFormatReader(hints,200);
+    const video=document.getElementById('camVideo');
+    const bs=document.getElementById('btnCamStop'),bf=document.getElementById('btnCamFlip'),cl=document.getElementById('camLine');
+    if(bs)bs.style.display='block';if(bf)bf.style.display='block';if(cl)cl.style.animationPlayState='running';
+    torchOn=false;const bt=document.getElementById('btnCamTorch');if(bt)bt.textContent='🔦';
+    try{
+      await codeReader.decodeFromVideoDevice(nd.deviceId,video,(res,err)=>{if(res&&!camCooldown){handleCamScan(res.getText());startCooldown();}});
+      camStream=video.srcObject;
+      torchTrack=camStream?.getVideoTracks()[0]||null;
+      const caps=torchTrack?.getCapabilities?.();
+      if(bt)bt.style.display=(caps&&caps.torch)?'block':'none';
+      if(sbar){sbar.textContent='🔍 Inquadra il codice...';sbar.className='cam-sbar s';}
+    }catch(e){if(sbar){sbar.textContent='Errore: '+e.message;sbar.className='cam-sbar e';}}
+  } else {
+    facingMode=(facingMode==='environment')?'user':'environment';
+    stopCamera(true);
+    await startCamera('camVideo', handleCamScan, 'scan');
+  }
+}
+
+async function toggleTorch(){
+  if(!torchTrack)return;
+  try{
+    torchOn=!torchOn;
+    await torchTrack.applyConstraints({advanced:[{torch:torchOn}]});
+    const bt=document.getElementById('btnCamTorch');
+    if(bt)bt.textContent=torchOn?'💡':'🔦';
+  }catch(e){showToast('Flash non supportato','err');torchOn=false;}
+}
+
+function handleCamScan(raw){
+  const sbar=document.getElementById('camSbar');
+  const flash=document.getElementById('camFlash');
+  if(sbar)sbar.textContent='📦 Letto: '+raw;
+  if(flash){flash.className='cam-flash';void flash.offsetWidth;}
+  const ok=processScan(raw,'cam');
+  if(flash)flash.classList.add(ok!==false?'ok':'err');
+  if(sbar)sbar.className=ok!==false?'cam-sbar f':'cam-sbar e';
+  setTimeout(()=>{if(flash)flash.className='cam-flash';},500);
+}
+
+function handleRicCamScan(raw){
+  const sbar=document.getElementById('ricCamSbar');
+  if(sbar){sbar.textContent='📦 Letto: '+raw;sbar.className='ric-cam-sbar f';}
+  stopRicCamera();
+  // Mostra il risultato nel campo input e triggera riconoscimento
+  document.getElementById('ricInput').value=raw;
+  riconosciPacco(raw);
+  // Nascondi la sezione camera nel modal
+  document.getElementById('ricCamSection').style.display='none';
+}
+
+function startCooldown(){
+  camCooldown=true;
+  const bar=document.getElementById('camCd');
+  let pct=100;if(bar)bar.style.width='100%';
+  clearInterval(cooldownInterval);
+  cooldownInterval=setInterval(()=>{
+    pct-=(100/(COOLDOWN_MS/50));
+    if(bar)bar.style.width=Math.max(0,pct)+'%';
+    if(pct<=0){clearInterval(cooldownInterval);if(bar)bar.style.width='0%';camCooldown=false;}
+  },50);
+  clearTimeout(cooldownTimer);cooldownTimer=setTimeout(()=>{camCooldown=false;},COOLDOWN_MS);
+}
 
 // Keep scanner focused
 setInterval(()=>{
