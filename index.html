@@ -1116,7 +1116,7 @@ function processScan(raw,source='scanner',bypass=false){
   const resolved=resolveOrder(orderNum);
   let fClient=resolved?.client||null,fOrder=resolved?.order||null;
   const resolvedNum=resolved?.orderNum||null;
-  if(resolved&&resolvedNum!==orderNum)showToast(`⚠️ ${orderNum} → trovato come ${resolvedNum} (${fClient})`,'err');
+  // toast rimosso: fallback ordine silenzioso
   if(resolved)orderNum=resolved.orderNum;
   if(!fOrder){
     const sim=findSim(orderNum);
@@ -1941,8 +1941,11 @@ let syncIgnoreNext = false; // evita loop: push locale → listener → re-push
 function fbInit() {
   if (fbApp) return true;
   try {
-    fbApp = firebase.initializeApp(FB_CONFIG);
-    fbDb  = firebase.database(fbApp);
+    // Evita "App already exists" su ricaricamento pagina
+    fbApp = firebase.apps.length
+      ? firebase.app()
+      : firebase.initializeApp(FB_CONFIG);
+    fbDb = firebase.database(fbApp);
     return true;
   } catch(e) {
     syncLog('❌ Errore init Firebase: ' + e.message, 'err');
@@ -1954,7 +1957,7 @@ function fbInit() {
 function syncCreate() {
   if (!fbInit()) return;
   if (syncSessionId) { syncLog('⚠️ Già connesso. Disconnettiti prima.', 'err'); return; }
-  if (!Object.keys(S.clients).length) { showToast('⚠️ Carica prima la lista Excel', 'err'); return; }
+  if (!S.clients || !Object.keys(S.clients).length) { showToast('⚠️ Carica prima la lista Excel', 'err'); return; }
 
   const code = String(Math.floor(100000 + Math.random() * 900000));
   syncSessionId = code;
@@ -2099,7 +2102,7 @@ function setSyncUI(state) {
     if (bar) bar.classList.add('connected');
     if (txt) txt.textContent = '🟢 Connesso · sessione ' + (syncSessionId || '');
     if (leaveS)  leaveS.style.display  = 'block';
-    if (createS) createS.querySelector('button').disabled = true;
+    if (createS) { const b=createS.querySelector('button'); if(b) b.disabled = true; }
     if (joinS)   joinS.style.display   = 'none';
   } else if (state === 'syncing') {
     [dot, dot2].forEach(d => { if (d) d.classList.add('syncing'); });
@@ -2109,7 +2112,7 @@ function setSyncUI(state) {
     // disconnected
     if (txt) txt.textContent = 'Non connesso';
     if (leaveS)  leaveS.style.display  = 'none';
-    if (createS) createS.querySelector('button').disabled = false;
+    if (createS) { const b=createS.querySelector('button'); if(b) b.disabled = false; }
     if (joinS)   joinS.style.display   = 'block';
   }
 }
