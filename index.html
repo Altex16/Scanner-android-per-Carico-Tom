@@ -262,6 +262,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 }
 .collo.done{background:rgba(0,200,150,.2);border-color:var(--ok);color:var(--ok);}
 .collo.miss{background:rgba(255,140,0,.15);border-color:var(--warn);color:var(--warn);}
+.collo.nd{background:rgba(160,100,255,.18);border-color:#a064ff;color:#a064ff;font-weight:700;font-size:.6rem;letter-spacing:.02em;}
+.collo.nd:hover,.collo.nd:active{background:rgba(160,100,255,.35);border-color:#a064ff;color:#fff;transform:scale(1.15);}
 .collo.hi{animation:boop .6s ease;}
 @keyframes boop{0%{transform:scale(1)}40%{transform:scale(1.7);box-shadow:0 0 12px var(--ok)}100%{transform:scale(1.05)}}
 
@@ -405,6 +407,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .btn-collo-close{padding:13px;background:var(--surf2);color:var(--muted);border:1px solid var(--border);border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;cursor:pointer;}
 .btn-collo-spunta{padding:13px;background:var(--ok);color:#000;border:none;border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:700;cursor:pointer;}
 .btn-collo-despunta{padding:13px;background:var(--err);color:#fff;border:none;border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:700;cursor:pointer;}
+.btn-collo-nd{padding:13px;background:#a064ff;color:#fff;border:none;border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:700;cursor:pointer;}
+.btn-collo-nd-rem{padding:13px;background:var(--surf2);color:#a064ff;border:1px solid #a064ff;border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:700;cursor:pointer;}
+.collo-btns-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
 
 /* ══ PAGE: PDF ══ */
 #page-pdf{background:var(--bg);}
@@ -809,9 +814,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     <div class="collo-nome" id="colloNome"></div>
     <div class="collo-dim" id="colloDim"></div>
     <div class="collo-attrs" id="colloAttrs"></div>
-    <div class="collo-btns" id="colloBtns">
+    <div class="collo-btns-3" id="colloBtns">
       <button class="btn-collo-close" onclick="closeColloModal()">✕ Chiudi</button>
       <button class="btn-collo-spunta" id="btnColloAction" onclick="colloModalAction()">✓ Spunta</button>
+      <button class="btn-collo-nd" id="btnColloNd" onclick="colloNdAction()">ND</button>
     </div>
   </div>
 </div>
@@ -928,7 +934,7 @@ function loadFile(file){
         const co=parseInt(row[2])||0,de=(row[4]||'').toString().trim();
         if(!cl||!or||!co||cl.toUpperCase().includes('TOTALI'))continue;
         if(!S.clients[cl])S.clients[cl]={orders:{}};
-        if(!S.clients[cl].orders[or])S.clients[cl].orders[or]={total:co,scanned:new Set(),desc:de};
+        if(!S.clients[cl].orders[or])S.clients[cl].orders[or]={total:co,scanned:new Set(),nd:new Set(),desc:de};
         else S.clients[cl].orders[or].total+=co;
       }
       const nc=Object.keys(S.clients).length;
@@ -965,7 +971,7 @@ function fillOrderSelect(cn){
   so.disabled=!cn;
   if(!cn||!S.clients[cn])return;
   Object.entries(S.clients[cn].orders).forEach(([on,od])=>{
-    const sc=od.scanned.size,tot=od.total,done=sc===tot;
+    const sc=od.scanned.size,ndSz=(od.nd?.size||0),tot=od.total,done=(sc+ndSz)>=tot;
     const o=document.createElement('option');
     o.value=on;o.textContent=`${on}  (${sc}/${tot}${done?' ✓':''})`;
     so.appendChild(o);
@@ -1005,7 +1011,7 @@ function updateSessionUI(){
 function refreshSessProg(){
   if(!SESS.active)return;
   const ord=S.clients[SESS.client]?.orders[SESS.order];if(!ord)return;
-  const sc=ord.scanned.size,tot=ord.total,rem=tot-sc;
+  const sc=ord.scanned.size,ndSp=ord.nd?.size||0,tot=ord.total,rem=tot-sc-ndSp;
   const pct=tot>0?Math.round(sc/tot*100):0;
   document.getElementById('sbProg').textContent=
     sc===tot?`✅ COMPLETATO — tutti i ${tot} colli`:`${sc}/${tot} colli — mancano ${rem}`;
@@ -1134,7 +1140,7 @@ function processScan(raw,source='scanner',bypass=false){
   }
   const isPaused=!!S.paused[orderNum];
   if(cIdx===null){
-    for(let i=1;i<=fOrder.total;i++){if(!fOrder.scanned.has(i)){cIdx=i;break;}}
+    for(let i=1;i<=fOrder.total;i++){if(!fOrder.scanned.has(i)&&!fOrder.nd?.has(i)){cIdx=i;break;}}
     if(cIdx===null){flashErr();playBeep('dup');setStatus(`⚠️ Ordine ${orderNum}: tutti i colli già scansionati!`,'warn');addLog(`Ordine ${orderNum}: già completo`,'dup');return false;}
   }
   if(cIdx<1||cIdx>fOrder.total){
@@ -1163,7 +1169,7 @@ function processScan(raw,source='scanner',bypass=false){
   } else {
     playBeep(isMultiDiff?'multi_diff':isSessionOrder?'multi_ok':'ok');
   }
-  const rem=fOrder.total-fOrder.scanned.size;
+  const ndCount=fOrder.nd?.size||0;const rem=fOrder.total-fOrder.scanned.size-ndCount;
   const clientTag = (!SESS.active||fClient!==SESS.client) ? ` [${fClient}]` :
     (isMultiDiff ? ` [Ord.${orderNum}]` : '');
   if(rem===0){
@@ -1171,7 +1177,7 @@ function processScan(raw,source='scanner',bypass=false){
     if(!isPaused){showToast(`🎉 Ordine ${orderNum} completato!`,'complete');playBeep('complete');}
     addLog(`Ordine ${orderNum}: COMPLETATO ✓`,'ok');
   } else {
-    const missList=[];for(let i=1;i<=fOrder.total;i++)if(!fOrder.scanned.has(i))missList.push(i);
+    const missList=[];for(let i=1;i<=fOrder.total;i++)if(!fOrder.scanned.has(i)&&!fOrder.nd?.has(i))missList.push(i);
     const missStr=missList.length<=15?missList.join(', '):missList.slice(0,15).join(', ')+'…';
     setStatus(`✅ Collo ${cIdx}/${fOrder.total} — mancano ${rem}: [${missStr}]${clientTag}`,'ok');
     addLog(`${orderNum}: collo ${cIdx}/${fOrder.total} ✓`,'ok');
@@ -1185,7 +1191,7 @@ function processScan(raw,source='scanner',bypass=false){
 // ── PAUSE / RESUME ────────────────────────────────────
 function pauseOrder(ord,cl){
   const o=S.clients[cl]?.orders[ord];if(!o)return;
-  const miss=[];for(let i=1;i<=o.total;i++)if(!o.scanned.has(i))miss.push(i);
+  const miss=[];for(let i=1;i<=o.total;i++)if(!o.scanned.has(i)&&!o.nd?.has(i))miss.push(i);
   if(!miss.length){showToast('Ordine già completo','err');return;}
   S.paused[ord]={clientName:cl,missing:[...miss]};
   playBeep('pause');addLog(`Ordine ${ord} in PAUSA — ${miss.length} colli mancanti`,'psd');
@@ -1239,7 +1245,7 @@ function renderOrdini(){
   </div>`;
   for(const[cn,cd] of Object.entries(S.clients)){
     const ords=cd.orders,oc=Object.keys(ords).length;
-    const dc=Object.values(ords).filter(o=>o.scanned.size===o.total).length;
+    const dc=Object.values(ords).filter(o=>(o.scanned.size+(o.nd?.size||0))>=o.total).length;
     const cs=Object.values(ords).reduce((a,o)=>a+o.scanned.size,0);
     const ct=Object.values(ords).reduce((a,o)=>a+o.total,0);
     const done=dc===oc,part=cs>0&&!done,hasp=Object.keys(ords).some(o=>S.paused[o]);
@@ -1256,13 +1262,13 @@ function renderOrdini(){
       </div>
       <div class="order-list" id="ccl-${escId(cn)}">`;
     for(const[on,od] of Object.entries(ords)){
-      const sc=od.scanned.size,tot=od.total,odone=sc===tot,ip=!!S.paused[on];
+      const sc=od.scanned.size,ndN=(od.nd?.size||0),tot=od.total,odone=(sc+ndN)>=tot,ip=!!S.paused[on];
       const miss=ip?S.paused[on].missing:[];
       html+=`<div class="order-item ${ip?'paused':''}">
         <div class="oi-top">
           <div class="oi-num">${on}${ip?'<span class="oi-pbadge">⏸ PAUSA</span>':''}</div>
           <div class="oi-actions">
-            <div class="oi-count"><span class="sc">${sc}</span><span class="tc">/${tot}</span>${odone?' ✓':''}</div>
+            <div class="oi-count"><span class="sc">${sc}</span><span class="tc">/${tot}</span>${ndN>0?'<span style="color:#a064ff;font-size:.7rem;margin-left:3px;">+'+ndN+'ND</span>':''} ${odone?'✓':''}</div>
             ${!odone?(ip?`<button class="btn-unpause" onclick="resumeOrder('${on}')">▶</button>`:`<button class="btn-pause" onclick="pauseOrder('${on}','${escH(cn)}')">⏸</button>`):''}
           </div>
         </div>
@@ -1274,7 +1280,7 @@ function renderOrdini(){
         </div>`:''}
         <div class="colli-grid">`;
       for(let i=1;i<=tot;i++){
-        const cls=od.scanned.has(i)?'done':(ip&&miss.includes(i))?'miss':'';
+        const cls=od.scanned.has(i)?'done':(od.nd?.has(i))?'nd':(ip&&miss.includes(i))?'miss':'';
         const hasInfo=!!(P[on]&&P[on][i]);
         html+=`<div class="collo ${cls}${hasInfo?' has-info':''}" id="collo-${on}-${i}" onclick="colloTap('${on}','${escH(cn)}',${i})">${i}</div>`;
       }
@@ -1340,16 +1346,17 @@ function showToast(msg,type){
 function totOrders(){return Object.values(S.clients).reduce((a,c)=>a+Object.keys(c.orders).length,0);}
 function totColli(){return Object.values(S.clients).reduce((a,c)=>a+Object.values(c.orders).reduce((b,o)=>b+o.total,0),0);}
 function scanColli(){return Object.values(S.clients).reduce((a,c)=>a+Object.values(c.orders).reduce((b,o)=>b+o.scanned.size,0),0);}
-function doneOrders(){return Object.values(S.clients).reduce((a,c)=>a+Object.values(c.orders).filter(o=>o.scanned.size===o.total).length,0);}
-function clientDone(n){const c=S.clients[n];return c?Object.values(c.orders).every(o=>o.scanned.size===o.total):false;}
+function doneOrders(){return Object.values(S.clients).reduce((a,c)=>a+Object.values(c.orders).filter(o=>(o.scanned.size+(o.nd?.size||0))>=o.total).length,0);}
+function clientDone(n){const c=S.clients[n];return c?Object.values(c.orders).every(o=>(o.scanned.size+(o.nd?.size||0))>=o.total):false;}
 function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function escId(s){return String(s).replace(/[^a-zA-Z0-9]/g,'_');}
 
 // ── COLLO TAP ─────────────────────────────────────────
 function colloTap(ord,cl,idx){
   const o=S.clients[cl]?.orders[ord];if(!o)return;
-  if(P[ord]&&P[ord][idx]){showColloModal(ord,cl,idx);}
-  else{showSpuntaModal(ord,cl,idx);}
+  // Se c'è info PDF OPPURE il collo è già ND → usa modal collo (mostra btn ND)
+  if((P[ord]&&P[ord][idx])||o.nd?.has(idx)){showColloModal(ord,cl,idx);}
+  else{showColloModal(ord,cl,idx);} // sempre modal collo per avere btn ND disponibile
 }
 
 // ── MODAL COLLO INFO (PDF) ────────────────────────────
@@ -1375,19 +1382,61 @@ function showColloModal(ord,cl,idx){
   document.getElementById('colloAttrs').innerHTML=attrsHtml||'';
   const o=S.clients[cl]?.orders[ord];
   const alreadyDone=o?.scanned.has(idx);
+  const alreadyNd=o?.nd?.has(idx)||false;
   const actionBtn=document.getElementById('btnColloAction');
   actionBtn.textContent=alreadyDone?'↩ De-spunta':'✓ Spunta';
   actionBtn.className=alreadyDone?'btn-collo-despunta':'btn-collo-spunta';
+  actionBtn.disabled=alreadyNd;
   actionBtn.onclick=()=>{closeColloModal();showSpuntaModal(ord,cl,idx);};
+  const ndBtn=document.getElementById('btnColloNd');
+  ndBtn.textContent=alreadyNd?'↩ Rimuovi ND':'ND — Non caricato';
+  ndBtn.className=alreadyNd?'btn-collo-nd-rem':'btn-collo-nd';
+  ndBtn.disabled=alreadyDone;
+  ndBtn.onclick=()=>{closeColloModal();toggleNd(ord,cl,idx);};
   document.getElementById('modalCollo').classList.add('show');
 }
 function closeColloModal(){document.getElementById('modalCollo').classList.remove('show');}
 function colloModalAction(){const btn=document.getElementById('btnColloAction');if(btn&&btn.onclick){btn.onclick();}} // fallback — di norma onclick viene settato da showColloModal()
 
+// ── ND — Non caricato ───────────────────────────────
+function toggleNd(ord,cl,idx){
+  const o=S.clients[cl]?.orders[ord];if(!o)return;
+  if(!o.nd)o.nd=new Set();
+  const wasNd=o.nd.has(idx);
+  if(wasNd){
+    // rimuovi ND
+    o.nd.delete(idx);
+    addLog(`${ord}: collo ${idx} ND rimosso`,'dup');
+    showToast(`↩ Collo ${idx} ND rimosso`,'err');playBeep('dup');
+  } else {
+    // se già spuntato non si può mettere ND
+    if(o.scanned.has(idx)){showToast(`⚠️ Collo ${idx} già scansionato`,'err');return;}
+    o.nd.add(idx);
+    // rimuovi dai missing se in pausa
+    if(S.paused[ord]){
+      S.paused[ord].missing=S.paused[ord].missing.filter(x=>x!==idx);
+      if(!S.paused[ord].missing.length){delete S.paused[ord];showToast(`✅ Ordine ${ord} pausa completato!`,'complete');playBeep('complete');}
+    }
+    addLog(`${ord}: collo ${idx} marcato ND`,'psd');
+    showToast(`🟣 Collo ${idx} — ND`,'');
+    playBeep('pause');
+    // controlla se ordine completato (scanned+nd >= total)
+    const tot=o.total,sc=o.scanned.size,nd=o.nd.size;
+    if(sc+nd>=tot){
+      showToast(`✅ Ordine ${ord} completato (con ND)!`,'complete');playBeep('complete');
+      addLog(`${ord}: COMPLETATO (${nd} ND) ✓`,'ok');
+    }
+    if(clientDone(cl))showToast(`🏆 Cliente "${cl}" completato!`,'complete');
+  }
+  renderAll();saveState();
+}
+
 // ── SPUNTA MANUALE ────────────────────────────────────
 let _spuntaPending=null;
 function showSpuntaModal(ord,cl,idx){
   const o=S.clients[cl]?.orders[ord];if(!o)return;
+  // Se collo è ND, apri modal collo invece di spunta diretta
+  if(o.nd?.has(idx)){showColloModal(ord,cl,idx);return;}
   const alreadyDone=o.scanned.has(idx);
   _spuntaPending={ord,cl,idx,remove:alreadyDone};
   document.getElementById('spuntaIcon').textContent=alreadyDone?'↩️':'✅';
@@ -1416,6 +1465,8 @@ function confirmSpunta(){
     showToast(`↩ Collo ${idx} rimosso da ${ord}`,'err');playBeep('dup');
   } else {
     if(o.scanned.has(idx)){showToast(`⚠️ Collo ${idx} già scansionato!`,'err');playBeep('dup');return;}
+    // rimuovi ND se presente (spunta manuale prevale su ND)
+    if(o.nd?.has(idx))o.nd.delete(idx);
     o.scanned.add(idx);
     if(S.paused[ord]){
       S.paused[ord].missing=S.paused[ord].missing.filter(x=>x!==idx);
@@ -1588,7 +1639,7 @@ function saveState(){
     for(const[cn,cd] of Object.entries(S.clients)){
       data.clients[cn]={orders:{}};
       for(const[on,od] of Object.entries(cd.orders))
-        data.clients[cn].orders[on]={total:od.total,scanned:[...od.scanned],desc:od.desc};
+        data.clients[cn].orders[on]={total:od.total,scanned:[...od.scanned],nd:[...(od.nd||[])],desc:od.desc};
     }
     localStorage.setItem(LS_KEY,JSON.stringify(data));updateSaveInfo();
   }catch(e){}
@@ -1602,7 +1653,7 @@ function loadState(){
     for(const[cn,cd] of Object.entries(data.clients)){
       S.clients[cn]={orders:{}};
       for(const[on,od] of Object.entries(cd.orders))
-        S.clients[cn].orders[on]={total:od.total,scanned:new Set(od.scanned||[]),desc:od.desc||''};
+        S.clients[cn].orders[on]={total:od.total,scanned:new Set(od.scanned||[]),nd:new Set(od.nd||[]),desc:od.desc||''};
     }
     S.paused=data.paused||{};S.filter=data.filter||'all';
     if(data.sess?.active){SESS.active=data.sess.active;SESS.client=data.sess.client;SESS.order=data.sess.order;}
@@ -1635,7 +1686,7 @@ function updateSaveInfo(){
 function dismissBanner(){document.getElementById('restoreBanner').classList.remove('show');}
 function updateReportStats(){
   const orders=Object.values(S.clients).flatMap(c=>Object.entries(c.orders));
-  const comp=orders.filter(([,o])=>o.scanned.size===o.total).length;
+  const comp=orders.filter(([,o])=>(o.scanned.size+(o.nd?.size||0))>=o.total).length;
   const paused=Object.keys(S.paused).length,inc=orders.length-comp;
   const rc=document.getElementById('rStatComp'),ri=document.getElementById('rStatInc'),rp=document.getElementById('rStatPause');
   if(rc)rc.textContent=comp;if(ri)ri.textContent=inc;if(rp)rp.textContent=paused;
@@ -1651,23 +1702,46 @@ function downloadReport(){
   try{
     const wb=XLSX.utils.book_new();
     const dateStr=new Date().toLocaleDateString('it-IT').replace(/\//g,'-');
-    const comp=[['Cliente','Ordine','Colli Totali','Scansionati','Descrizione']];
-    const inc=[['Cliente','Ordine','Colli Totali','Scansionati','Mancanti','Lista Mancanti','Descrizione']];
-    const psd=[['Ordine','Cliente','Colli Totali','Scansionati','Mancanti','Lista Mancanti','Descrizione']];
-    for(const[cn,cd] of Object.entries(S.clients))
+    // Intestazioni
+    const hComp=['Cliente','Ordine','Colli Totali','Spuntati','N° ND','Colli ND','Descrizione'];
+    const hInc =['Cliente','Ordine','Colli Totali','Spuntati','N° ND','Colli ND','N° Mancanti','Colli Mancanti','Descrizione'];
+    const hPsd =['Ordine','Cliente','Colli Totali','Spuntati','N° ND','Colli ND','N° Mancanti','Colli Mancanti','Descrizione'];
+    const comp=[hComp],inc=[hInc],psd=[hPsd];
+    for(const[cn,cd] of Object.entries(S.clients)){
       for(const[on,od] of Object.entries(cd.orders)){
-        if(od.scanned.size===od.total)comp.push([cn,on,od.total,od.scanned.size,od.desc]);
-        else{const miss=[];for(let i=1;i<=od.total;i++)if(!od.scanned.has(i))miss.push(i);inc.push([cn,on,od.total,od.scanned.size,miss.length,miss.join(', '),od.desc]);}
+        const sc=od.scanned.size;
+        const ndList=[...(od.nd||[])].sort((a,b)=>a-b);
+        const ndN=ndList.length;
+        const ndStr=ndList.join(', ');
+        const done=(sc+ndN)>=od.total;
+        if(done){
+          comp.push([cn,on,od.total,sc,ndN,ndStr,od.desc]);
+        } else {
+          const miss=[];for(let i=1;i<=od.total;i++)if(!od.scanned.has(i)&&!od.nd?.has(i))miss.push(i);
+          inc.push([cn,on,od.total,sc,ndN,ndStr,miss.length,miss.join(', '),od.desc]);
+        }
       }
+    }
     for(const[on,pd] of Object.entries(S.paused)){
       const od=S.clients[pd.clientName]?.orders[on];if(!od)continue;
-      psd.push([on,pd.clientName,od.total,od.scanned.size,pd.missing.length,pd.missing.join(', '),od.desc]);
+      const ndList=[...(od.nd||[])].sort((a,b)=>a-b);
+      const ndN=ndList.length;
+      const ndStr=ndList.join(', ');
+      const miss=pd.missing.filter(x=>!od.nd?.has(x));
+      psd.push([on,pd.clientName,od.total,od.scanned.size,ndN,ndStr,miss.length,miss.join(', '),od.desc]);
     }
-    if(psd.length===1)psd.push(['(nessun ordine in pausa)','','','','','','']);
-    const wsC=XLSX.utils.aoa_to_sheet(comp);wsC['!cols']=[{wch:30},{wch:12},{wch:14},{wch:14},{wch:40}];
-    const wsI=XLSX.utils.aoa_to_sheet(inc);wsI['!cols']=[{wch:30},{wch:12},{wch:14},{wch:14},{wch:10},{wch:50},{wch:40}];
-    const wsP=XLSX.utils.aoa_to_sheet(psd);wsP['!cols']=[{wch:12},{wch:30},{wch:14},{wch:14},{wch:10},{wch:50},{wch:40}];
-    XLSX.utils.book_append_sheet(wb,wsC,'Completati');XLSX.utils.book_append_sheet(wb,wsI,'Incompleti');XLSX.utils.book_append_sheet(wb,wsP,'In Pausa');
+    if(comp.length===1)comp.push(['(nessun ordine completato)','','','','','','']);
+    if(inc.length===1)inc.push(['(nessun ordine incompleto)','','','','','','','','']);
+    if(psd.length===1)psd.push(['(nessun ordine in pausa)','','','','','','','','']);
+    const wsC=XLSX.utils.aoa_to_sheet(comp);
+    wsC['!cols']=[{wch:30},{wch:12},{wch:13},{wch:11},{wch:8},{wch:30},{wch:40}];
+    const wsI=XLSX.utils.aoa_to_sheet(inc);
+    wsI['!cols']=[{wch:30},{wch:12},{wch:13},{wch:11},{wch:8},{wch:30},{wch:12},{wch:40},{wch:40}];
+    const wsP=XLSX.utils.aoa_to_sheet(psd);
+    wsP['!cols']=[{wch:12},{wch:30},{wch:13},{wch:11},{wch:8},{wch:30},{wch:12},{wch:40},{wch:40}];
+    XLSX.utils.book_append_sheet(wb,wsC,'Completati');
+    XLSX.utils.book_append_sheet(wb,wsI,'Incompleti');
+    XLSX.utils.book_append_sheet(wb,wsP,'In Pausa');
     XLSX.writeFile(wb,`report_carico_${dateStr}.xlsx`);
     showToast('📥 Report scaricato!','ok');playBeep('ok');
   }catch(e){showToast('❌ Errore report: '+e.message,'err');}
@@ -2063,7 +2137,7 @@ function serializeS() {
   for (const [cn, cd] of Object.entries(S.clients)) {
     out.clients[cn] = { orders: {} };
     for (const [on, od] of Object.entries(cd.orders))
-      out.clients[cn].orders[on] = { total: od.total, scanned: [...od.scanned], desc: od.desc };
+      out.clients[cn].orders[on] = { total: od.total, scanned: [...od.scanned], nd: [...(od.nd||[])], desc: od.desc };
   }
   return out;
 }
@@ -2073,7 +2147,7 @@ function deserializeS(data) {
   for (const [cn, cd] of Object.entries(data.clients)) {
     S.clients[cn] = { orders: {} };
     for (const [on, od] of Object.entries(cd.orders))
-      S.clients[cn].orders[on] = { total: od.total, scanned: new Set(od.scanned || []), desc: od.desc || '' };
+      S.clients[cn].orders[on] = { total: od.total, scanned: new Set(od.scanned || []), nd: new Set(od.nd || []), desc: od.desc || '' };
   }
   S.paused = data.paused || {};
   S.filter  = data.filter  || 'all';
@@ -2164,19 +2238,20 @@ function restoreSyncSession() {
     const { code, isHost } = JSON.parse(raw);
     if (!code || !/^\d{6}$/.test(code)) return;
     if (!fbInit()) return;
-    syncSessionId = code;
-    syncIsHost    = isHost;
+    // NON impostare syncSessionId prima — aspetta conferma da Firebase
     setSyncUI('syncing');
     // Verifica che la sessione esista ancora
     fbDb.ref('sessions/' + code + '/state').once('value')
       .then(snap => {
         if (!snap.val()) {
-          // Sessione scaduta
-          syncSessionId = null; syncIsHost = false;
+          // Sessione scaduta o inesistente — non bloccare
           clearSyncSession(); setSyncUI('disconnected');
           syncLog('ℹ️ Sessione precedente scaduta', 'info');
           return;
         }
+        // Sessione confermata su Firebase — ora imposta l'ID
+        syncSessionId = code;
+        syncIsHost    = isHost;
         if (isHost) {
           // Host: ripristina e ricomincia ad ascoltare
           setSyncUI('connected');
@@ -2193,7 +2268,6 @@ function restoreSyncSession() {
         }
       })
       .catch(e => {
-        syncSessionId = null; syncIsHost = false;
         clearSyncSession(); setSyncUI('disconnected');
         syncLog('⚠️ Errore ripristino sessione: ' + e.message, 'err');
       });
